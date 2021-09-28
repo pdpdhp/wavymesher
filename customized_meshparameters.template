@@ -24,7 +24,7 @@ set GRD_TYP                       STR;# STR (for STRUCTURED) | UNSTR (for UNSTRU
 # STRUCTURED SETTINGS:
 #====================================================
 #total height for farfield boundary condition
-set Total_Height                  600;# (YES/NO)
+set Total_Height                  600;# 
 
 #types of wavyness
 set Wave_Type                      W2;# W1: sine function | W2: cosine function (uses wave depth)| W3: cos.sin
