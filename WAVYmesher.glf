@@ -122,6 +122,7 @@ CAD_Read
 #READING WAVE AT TRAILING EDGE
 set wavelist [list {*}[lrange $meshparacol 4 10] $wave_sg $span]
 set wavelab [list {*}[lrange $defParas 4 10] WV_NOD span]
+set wscales [list $Wave_inVScale $Wave_outVScale]
 
 Wave_Update $wavelab $wavelist $geoDir
 
@@ -137,7 +138,7 @@ Topo_Prep_Mesh $Wavy_Percent
 set fexmod [open "$scriptDir/CAE_export.out" w]
 #
 #----------------------------------------------------------------------------
-WaveRemesh
+WaveRemesh $wscales
 #
 #DOMAIN EXAMINE
 $blkexam examine

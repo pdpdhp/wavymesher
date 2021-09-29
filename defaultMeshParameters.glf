@@ -48,10 +48,10 @@ set Amplitude                  0.0125;# effective only for W1 and W3
 set Num_Wave                        4;# for W3 needs two numbers (i.e. 4,1) indicating cos and sin no. of waves | W2 requires even number
 
 #wave inner surface tangent vector scale
-set Wave_inVScale                 1.5;
+set Wave_inVScale                 1.5;# inner tangent vector scale where wave meets the DU97 surface
 
 #wave outter surface tangent vector scale
-set Wave_outVScale                1.0;
+set Wave_outVScale                1.0;# outter tangent vector scale where wave ends at TE.
 
 # GRID DIMENSION:
 #===================================================

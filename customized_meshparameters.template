@@ -9,12 +9,12 @@
 
 #            DU97 Flatback PROFILE:
 #=====================================================
-set airfoil                 FLATBACK;#
+set airfoil                  FLATBACK;#
 
 #               GRID REFINEMENT LEVEL:
 #=====================================================
 #Grid Levels vary from the first line (finest, level 0) of the grid_specification.txt to the last line (coarsest, level 6)!
-set res_lev                         4;# From  0 (finest) to 6 (coarsest)
+set res_lev                         3;# From  0 (finest) to 6 (coarsest)
 
 #GRID SYSTEM'S ARRANGEMENT: STRUCTURED OR UNSTRUCTRED
 #====================================================
@@ -45,7 +45,13 @@ set ZZ_Abot                         0;#
 set Amplitude                  0.0125;# effective only for W1 and W3
 
 #Number of Waves 
-set Num_Wave                      4,2;# for W3 needs two numbers (i.e. 4,1) indicating cos and sin no. of waves | W2 requires even number
+set Num_Wave                        4;# for W3 needs two numbers (i.e. 4,1) indicating cos and sin no. of waves | W2 requires even number
+
+#wave inner surface tangent vector scale
+set Wave_inVScale                 1.5;# inner tangent vector scale where wave meets the DU97 surface
+
+#wave outter surface tangent vector scale
+set Wave_outVScale                1.0;# outter tangent vector scale where wave ends at TE.
 
 # GRID DIMENSION:
 #===================================================
@@ -62,7 +68,7 @@ set span_dimension                 44;# Only when fixed_snodes is NO
 #CAE EXPORT:
 #===================================================
 #CAE SOLVER SELECTION. 
-set cae_solver                    CGNS;# (Exp. SU2 or CGNS)
+set cae_solver                   CGNS;# (Exp. SU2 or CGNS)
 
 #POLYNOMIAL DEGREE FOR HIGH ORDER MESH EXPORT 
 set POLY_DEG                       Q1;# (Q1:Linear - Q4:quartic) | FOR SU2 ONLY Q1
