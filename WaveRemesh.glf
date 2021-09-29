@@ -11,7 +11,7 @@ proc range {from to} {
     if {$to>$from} {concat [range $from [incr to -1]] $to}
 }
 
-proc blend_wave {wave_bcon wave_tcon airfoilfront leftcons domtrs} {
+proc blend_wave {wave_bcon wave_tcon airfoilfront leftcons domtrs wscales} {
 	
 	set wbcon_sp [$wave_bcon split -I [range 2 [$wave_bcon getDimension]]]
 	set wtcon_sp [$wave_tcon split -I [range 2 [$wave_tcon getDimension]]]
@@ -35,7 +35,18 @@ proc blend_wave {wave_bcon wave_tcon airfoilfront leftcons domtrs} {
 	
 	set lfb_slpin [pwu::Vector3 subtract [[lindex $leftcons 3] getXYZ -grid $slopgNum] \
 											[[lindex $leftcons 3] getXYZ -grid 1]]
-	
+    
+    set lfin_vectors [list $lft_slpin $lfb_slpin]
+    set lfout_vectors [list $lft_slpout $lfb_slpout]
+    
+    foreach invec $lfin_vectors outvec $lfout_vectors {
+        set in_nvec [pwu::Vector3 normalize $invec]
+        set out_nvec [pwu::Vector3 normalize $outvec]
+        
+        lappend lfin_svecs [pwu::Vector3 scale $invec [lindex $wscales 0]]
+        lappend lfout_svecs [pwu::Vector3 scale $outvec [lindex $wscales 1]]
+    }
+    
 	foreach wbt [lrange $wbcon_sp 0 end-1] wtc [lrange $wtcon_sp 0 end-1] \
 					aft [lrange $aft_sp 0 end-1] afb [lrange $afb_sp 0 end-1] {
 		
@@ -43,8 +54,8 @@ proc blend_wave {wave_bcon wave_tcon airfoilfront leftcons domtrs} {
 		$seg_spl addPoint [$wtc getPosition -arc 1]
 		$seg_spl addPoint [$aft getPosition -arc 1]
 		$seg_spl setSlope Free
-		$seg_spl setSlopeOut 1 $lft_slpout
-		$seg_spl setSlopeIn 2 $lft_slpin
+		$seg_spl setSlopeOut 1 [lindex $lfout_svecs 0]
+		$seg_spl setSlopeIn 2 [lindex $lfin_svecs 0]
 		set seg_crvT [pw::Curve create]
 		$seg_crvT addSegment $seg_spl
 		
@@ -53,8 +64,8 @@ proc blend_wave {wave_bcon wave_tcon airfoilfront leftcons domtrs} {
 		$seg_spl addPoint [$afb getPosition -arc 1]
 		$seg_spl addPoint [$wbt getPosition -arc 1]
 		$seg_spl setSlope Free
-		$seg_spl setSlopeOut 1 $lfb_slpin
-		$seg_spl setSlopeIn 2 $lfb_slpout
+		$seg_spl setSlopeOut 1 [lindex $lfin_svecs 1]
+		$seg_spl setSlopeIn 2 [lindex $lfout_svecs 1]
 		set seg_crvB [pw::Curve create]
 		$seg_crvB addSegment $seg_spl
 		
@@ -95,7 +106,7 @@ proc blend_wave {wave_bcon wave_tcon airfoilfront leftcons domtrs} {
 }
 
 
-proc WaveRemesh { } {
+proc WaveRemesh {wscales} {
 
 	global w1_x w1_y w1_z w2_x w2_y w2_z blkexm span
 	global N_third rightcon_top rightcon_bot airfoilfront left_hte \
@@ -130,7 +141,7 @@ proc WaveRemesh { } {
 		lappend domtrs [$dom createPeriodic -translate [list 0 [expr -1*$span] 0]]
 	}
 	
-	set blended [blend_wave $wave_bcon $wave_tcon $airfoilfront $leftcons $domtrs]
+	set blended [blend_wave $wave_bcon $wave_tcon $airfoilfront $leftcons $domtrs $wscales]
 	
 	set domwte_top [lindex $blended 0]
 	set domwte_bot [lindex $blended 1]

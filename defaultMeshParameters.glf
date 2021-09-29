@@ -47,6 +47,12 @@ set Amplitude                  0.0125;# effective only for W1 and W3
 #Number of Waves 
 set Num_Wave                        4;# for W3 needs two numbers (i.e. 4,1) indicating cos and sin no. of waves | W2 requires even number
 
+#wave inner surface tangent vector scale
+set Wave_inVScale                 1.5;
+
+#wave outter surface tangent vector scale
+set Wave_outVScale                1.0;
+
 # GRID DIMENSION:
 #===================================================
 #SPAN DIMENSION FOR QUASI 2D MODEL IN -Y DIRECTION
