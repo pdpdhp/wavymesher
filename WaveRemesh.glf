@@ -54,11 +54,12 @@ proc blend_wave {wave_bcon wave_tcon airfoilfront leftcons domtrs wscales woutde
 					[expr [[lindex $leftcons 3] getDimension]-$slopgNum-1]] \
 								[[lindex $leftcons 3] getXYZ -arc 1] ]
 	
-	set otopslp [expr -1 * [lindex $woutdegs 0]]
+	set otopslp [lindex $woutdegs 0]
 	set obotslp [lindex $woutdegs 1]
 	
 	if {[string compare $otopslp Default]!=0 && [string compare $obotslp Default]!=0 } {
-
+		
+		set otopslp [expr -1 * [lindex $woutdegs 0]]
 		set lft_ang [tngdeg [lindex $lft_slpout 0] [lindex $lft_slpout 2] ]
 		set lfb_ang [tngdeg [lindex $lfb_slpout 0] [lindex $lfb_slpout 2] ]
 
@@ -70,6 +71,7 @@ proc blend_wave {wave_bcon wave_tcon airfoilfront leftcons domtrs wscales woutde
 
 	} elseif {[string compare $otopslp Default]!=0} {
 		
+		set otopslp [expr -1 * [lindex $woutdegs 0]]
 		set lft_ang [tngdeg [lindex $lft_slpout 0] [lindex $lft_slpout 2] ]
 		set lft_level [rotvec $lft_slpout [expr $lft_ang]]
 		set lft_slpout [rotvec $lft_level $otopslp]
@@ -79,9 +81,7 @@ proc blend_wave {wave_bcon wave_tcon airfoilfront leftcons domtrs wscales woutde
 		set lfb_ang [tngdeg [lindex $lfb_slpout 0] [lindex $lfb_slpout 2] ]
 		set lfb_level [rotvec $lfb_slpout [expr $lfb_ang]]
 		set lfb_slpout [rotvec $lfb_level $obotslp]
-	} else {
-		puts "PLEASE INDICATE CORRECT VALUE FOR WAVE TANGENT ANGLE IN YOUR INPUT FILE."
-		exit -1
+		
 	}
 
 	set lfin_vectors [list $lft_slpin $lfb_slpin]
