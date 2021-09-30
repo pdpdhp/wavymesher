@@ -61,8 +61,7 @@ proc blend_wave {wave_bcon wave_tcon airfoilfront leftcons domtrs wscales woutde
 
 		set lft_ang [tngdeg [lindex $lft_slpout 0] [lindex $lft_slpout 2] ]
 		set lfb_ang [tngdeg [lindex $lfb_slpout 0] [lindex $lfb_slpout 2] ]
-		puts $lft_ang
-		puts $lfb_ang
+
 		set lft_level [rotvec $lft_slpout [expr $lft_ang]]
 		set lfb_level [rotvec $lfb_slpout [expr $lfb_ang]]
 
