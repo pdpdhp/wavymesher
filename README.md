@@ -1,13 +1,17 @@
 Wavy Mesher
 ================================
 
-#### Introduction:
+Introduction:
+-------------
 These scripts written to generate structured grid with waviness at trailing edge.
 
-#### Instruction:
-
+Batch
+-----
 ```shell
-pointwise -b WAVYmesher.glf <?customized_meshparameters.template?>
+pointwise -b WAVYmesher.glf <?Mesh_Parameters.glf?>
 ```
 
+GUI
+---
+![GUI](https://github.com/pdpdhp/wavymesher/blob/main/wavymesherGUI.png)
 
