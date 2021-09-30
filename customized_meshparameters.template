@@ -53,6 +53,13 @@ set Wave_inVScale                 1.5;# inner tangent vector scale where wave me
 #wave outter surface tangent vector scale
 set Wave_outVScale                1.0;# outter tangent vector scale where wave ends at TE.
 
+#wave tanget vector angle (degree) at 100% chord | TOP
+set Wave_outTopVdeg           Default;# (Default or a real number to indicate angle of wave at 100% TE)
+
+#wave tanget vector angle (degree) at 100% chord | BOTTOM
+set Wave_outBottomVdeg        Default;# (Default or a real number to indicate angle of wave at 100% TE)
+
+
 # GRID DIMENSION:
 #===================================================
 #SPAN DIMENSION FOR QUASI 2D MODEL IN -Y DIRECTION

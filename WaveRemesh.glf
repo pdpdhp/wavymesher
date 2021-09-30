@@ -11,7 +11,23 @@ proc range {from to} {
     if {$to>$from} {concat [range $from [incr to -1]] $to}
 }
 
-proc blend_wave {wave_bcon wave_tcon airfoilfront leftcons domtrs wscales} {
+proc tngdeg {vecx vecz} {
+	global pi
+	set pi [expr {acos(-1)}]
+	set vecdeg [expr { (atan( $vecz/abs($vecx) ) * 180) / $pi }]
+	return $vecdeg
+}
+
+proc rotvec {vec deg} {
+	global pi
+	set rad [expr ($deg * $pi) / 180]
+	set xnew [expr [lindex $vec 0]*cos($rad) - [lindex $vec 2]*sin($rad)]
+	set znew [expr [lindex $vec 0]*sin($rad) + [lindex $vec 2]*cos($rad)]
+	set newvec [list $xnew [lindex $vec 1] $znew]
+	return $newvec
+}
+
+proc blend_wave {wave_bcon wave_tcon airfoilfront leftcons domtrs wscales woutdegs} {
 	
 	set wbcon_sp [$wave_bcon split -I [range 2 [$wave_bcon getDimension]]]
 	set wtcon_sp [$wave_tcon split -I [range 2 [$wave_tcon getDimension]]]
@@ -24,29 +40,59 @@ proc blend_wave {wave_bcon wave_tcon airfoilfront leftcons domtrs wscales} {
 	set aft_sp [[[[lindex $airfoilfront 1] getEdge 2] getConnector 1] split -I \
 				[range 2 [[[[lindex $airfoilfront 1] getEdge 2] getConnector 1] getDimension]]]
 	
-	set lft_slpin [pwu::Vector3 subtract [[lindex $leftcons 0] getXYZ -grid [expr [[lindex $leftcons 0] getDimension]-$slopgNum-1]] \
-											[[lindex $leftcons 0] getXYZ -arc 1] ]
+	set lft_slpin [pwu::Vector3 subtract [[lindex $leftcons 0] getXYZ -grid \
+				[expr [[lindex $leftcons 0] getDimension]-$slopgNum-1]] \
+								[[lindex $leftcons 0] getXYZ -arc 1] ]
+	
+	set lfb_slpin [pwu::Vector3 subtract [[lindex $leftcons 3] getXYZ -grid \
+				$slopgNum] [[lindex $leftcons 3] getXYZ -grid 1]]
 	
 	set lft_slpout [pwu::Vector3 subtract [[lindex $leftcons 0] getXYZ -grid $slopgNum] \
-												[[lindex $leftcons 0] getXYZ -arc 0] ]
+								[[lindex $leftcons 0] getXYZ -arc 0] ]
 	
-	set lfb_slpout [pwu::Vector3 subtract [[lindex $leftcons 3] getXYZ -grid [expr [[lindex $leftcons 3] getDimension]-$slopgNum-1]] \
-												[[lindex $leftcons 3] getXYZ -arc 1] ]
+	set lfb_slpout [pwu::Vector3 subtract [[lindex $leftcons 3] getXYZ -grid \
+					[expr [[lindex $leftcons 3] getDimension]-$slopgNum-1]] \
+								[[lindex $leftcons 3] getXYZ -arc 1] ]
 	
-	set lfb_slpin [pwu::Vector3 subtract [[lindex $leftcons 3] getXYZ -grid $slopgNum] \
-											[[lindex $leftcons 3] getXYZ -grid 1]]
-    
-    set lfin_vectors [list $lft_slpin $lfb_slpin]
-    set lfout_vectors [list $lft_slpout $lfb_slpout]
-    
-    foreach invec $lfin_vectors outvec $lfout_vectors {
-        set in_nvec [pwu::Vector3 normalize $invec]
-        set out_nvec [pwu::Vector3 normalize $outvec]
-        
-        lappend lfin_svecs [pwu::Vector3 scale $invec [lindex $wscales 0]]
-        lappend lfout_svecs [pwu::Vector3 scale $outvec [lindex $wscales 1]]
-    }
-    
+	set otopslp [expr -1 * [lindex $woutdegs 0]]
+	set obotslp [lindex $woutdegs 1]
+	
+	if {[string compare $otopslp Default]!=0 && [string compare $obotslp Default]!=0 } {
+
+		set lft_ang [tngdeg [lindex $lft_slpout 0] [lindex $lft_slpout 2] ]
+		set lfb_ang [tngdeg [lindex $lfb_slpout 0] [lindex $lfb_slpout 2] ]
+		puts $lft_ang
+		puts $lfb_ang
+		set lft_level [rotvec $lft_slpout [expr $lft_ang]]
+		set lfb_level [rotvec $lfb_slpout [expr $lfb_ang]]
+
+		set lft_slpout [rotvec $lft_level $otopslp]
+		set lfb_slpout [rotvec $lfb_level $obotslp]
+
+	} elseif {[string compare $otopslp Default]!=0} {
+		
+		set lft_ang [tngdeg [lindex $lft_slpout 0] [lindex $lft_slpout 2] ]
+		set lft_level [rotvec $lft_slpout [expr $lft_ang]]
+		set lft_slpout [rotvec $lft_level $otopslp]
+		
+	} elseif {[string compare $obotslp Default]!=0} {
+		
+		set lfb_ang [tngdeg [lindex $lfb_slpout 0] [lindex $lfb_slpout 2] ]
+		set lfb_level [rotvec $lfb_slpout [expr $lfb_ang]]
+		set lfb_slpout [rotvec $lfb_level $obotslp]
+	}
+
+	set lfin_vectors [list $lft_slpin $lfb_slpin]
+	set lfout_vectors [list $lft_slpout $lfb_slpout]
+
+	foreach invec $lfin_vectors outvec $lfout_vectors {
+		set in_nvec [pwu::Vector3 normalize $invec]
+		set out_nvec [pwu::Vector3 normalize $outvec]
+
+		lappend lfin_svecs [pwu::Vector3 scale $invec [lindex $wscales 0]]
+		lappend lfout_svecs [pwu::Vector3 scale $outvec [lindex $wscales 1]]
+	}
+
 	foreach wbt [lrange $wbcon_sp 0 end-1] wtc [lrange $wtcon_sp 0 end-1] \
 					aft [lrange $aft_sp 0 end-1] afb [lrange $afb_sp 0 end-1] {
 		
@@ -102,11 +148,10 @@ proc blend_wave {wave_bcon wave_tcon airfoilfront leftcons domtrs wscales} {
 	set airfoil_fb [pw::Connector join $afb_sp]
 	
 	return [list $domwte_top $domwte_bot]
-    
 }
 
 
-proc WaveRemesh {wscales} {
+proc WaveRemesh {wscales woutdegs} {
 
 	global w1_x w1_y w1_z w2_x w2_y w2_z blkexm span
 	global N_third rightcon_top rightcon_bot airfoilfront left_hte \
@@ -141,7 +186,7 @@ proc WaveRemesh {wscales} {
 		lappend domtrs [$dom createPeriodic -translate [list 0 [expr -1*$span] 0]]
 	}
 	
-	set blended [blend_wave $wave_bcon $wave_tcon $airfoilfront $leftcons $domtrs $wscales]
+	set blended [blend_wave $wave_bcon $wave_tcon $airfoilfront $leftcons $domtrs $wscales $woutdegs]
 	
 	set domwte_top [lindex $blended 0]
 	set domwte_bot [lindex $blended 1]

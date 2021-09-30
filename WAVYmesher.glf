@@ -123,6 +123,7 @@ CAD_Read
 set wavelist [list {*}[lrange $meshparacol 4 10] $wave_sg $span]
 set wavelab [list {*}[lrange $defParas 4 10] WV_NOD span]
 set wscales [list $Wave_inVScale $Wave_outVScale]
+set woutdegs [list $Wave_outTopVdeg $Wave_outBottomVdeg]
 
 Wave_Update $wavelab $wavelist $geoDir
 
@@ -138,7 +139,7 @@ Topo_Prep_Mesh $Wavy_Percent
 set fexmod [open "$scriptDir/CAE_export.out" w]
 #
 #----------------------------------------------------------------------------
-WaveRemesh $wscales
+WaveRemesh $wscales $woutdegs
 #
 #DOMAIN EXAMINE
 $blkexam examine

@@ -51,7 +51,14 @@ set Num_Wave                        4;# for W3 needs two numbers (i.e. 4,1) indi
 set Wave_inVScale                 1.5;# inner tangent vector scale where wave meets the DU97 surface
 
 #wave outter surface tangent vector scale
-set Wave_outVScale                1.0;# outter tangent vector scale where wave ends at TE.
+set Wave_outVScale                0.4;# outter tangent vector scale where wave ends at TE.
+
+#wave tanget vector angle (degree) at 100% chord | TOP
+set Wave_outTopVdeg              18.4;# (Default or a real number to indicate angle of wave at 100% TE)
+
+#wave tanget vector angle (degree) at 100% chord | BOTTOM
+set Wave_outBottomVdeg           35.6;# (Default or a real number to indicate angle of wave at 100% TE)
+
 
 # GRID DIMENSION:
 #===================================================

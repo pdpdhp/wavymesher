@@ -17,15 +17,16 @@ proc ParamDefualt {fdef} {
 
 	$fdefinterp eval $defscript
 
-	global airfoil res_lev GRD_TYP Total_Height Wave_Type Wave_Depth Wavy_Percent ZZ_Atop ZZ_Abot Amplitude Num_Wave \
-		 Wave_inVScale Wave_outVScale span fixed_snodes span_dimension cae_solver \
-			POLY_DEG cae_export save_native TARG_YPR TARG_GR CHR_SPC WV_NOD TE_SRT TE_PT \
-							EXP_FAC IMP_FAC VOL_FAC defParas meshparacol
+	global airfoil res_lev GRD_TYP Total_Height Wave_Type Wave_Depth Wavy_Percent ZZ_Atop ZZ_Abot \
+		Amplitude Num_Wave Wave_inVScale Wave_outVScale Wave_outTopVdeg Wave_outBottomVdeg span \
+		fixed_snodes span_dimension cae_solver POLY_DEG cae_export save_native TARG_YPR \
+				TARG_GR CHR_SPC WV_NOD TE_SRT TE_PT EXP_FAC IMP_FAC VOL_FAC defParas meshparacol
 
-	set defParas [list airfoil res_lev GRD_TYP Total_Height Wave_Type Wave_Depth Wavy_Percent ZZ_Atop ZZ_Abot Amplitude \
-		Num_Wave Wave_inVScale Wave_outVScale span fixed_snodes span_dimension cae_solver \
-			POLY_DEG cae_export save_native TARG_YPR TARG_GR CHR_SPC WV_NOD TE_SRT \
-									TE_PT EXP_FAC IMP_FAC VOL_FAC]
+	set defParas [list airfoil res_lev GRD_TYP Total_Height Wave_Type Wave_Depth Wavy_Percent ZZ_Atop \
+			ZZ_Abot Amplitude Num_Wave Wave_inVScale Wave_outVScale Wave_outTopVdeg \
+				Wave_outBottomVdeg span fixed_snodes span_dimension cae_solver POLY_DEG \
+				cae_export save_native TARG_YPR TARG_GR CHR_SPC WV_NOD TE_SRT TE_PT EXP_FAC \
+												IMP_FAC VOL_FAC]
 
 	foreach para $defParas {
 		set parav [$fdefinterp eval "set ${para}"]
