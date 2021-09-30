@@ -80,6 +80,9 @@ proc blend_wave {wave_bcon wave_tcon airfoilfront leftcons domtrs wscales woutde
 		set lfb_ang [tngdeg [lindex $lfb_slpout 0] [lindex $lfb_slpout 2] ]
 		set lfb_level [rotvec $lfb_slpout [expr $lfb_ang]]
 		set lfb_slpout [rotvec $lfb_level $obotslp]
+	} else {
+		puts "PLEASE INDICATE CORRECT VALUE FOR WAVE TANGENT ANGLE IN YOUR INPUT FILE."
+		exit -1
 	}
 
 	set lfin_vectors [list $lft_slpin $lfb_slpin]
