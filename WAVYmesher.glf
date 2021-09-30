@@ -75,6 +75,91 @@ proc CAD_Read { } {
 
 }
 
+proc WAVYMESHER {} {
+	
+	global MeshParameters
+	global res_lev ypg dsg grg chord_sg
+	global scriptDir fexmod geoDir blkexam blkexamv
+	global defParas meshparacol wave_sg span Wavy_Percent 
+	global Wave_inVScale Wave_outVScale Wave_outTopVdeg Wave_outBottomVdeg
+	global symsepdd
+	
+	set symsep [string repeat = 105]
+	set symsepd [string repeat . 105]
+	set symsepdd [string repeat - 105]
+	
+	if { $MeshParameters == "" } {
+		if [pw::Application isInteractive] {
+			set nprofile [tk_getOpenFile]
+		}
+	}
+
+	#----------------------------------------------------------------------------
+	#READING AND UPDATING GRID PARAMETERS AND VARIABLES
+	Config_Prep
+
+	puts $symsepdd
+	puts "GRID GUIDELINE: Level: $res_lev | Y+: $ypg | Delta_S(m): $dsg | GR: $grg | Chordwise_Spacing(m): $chord_sg"
+	puts $symsep
+
+	set time_start [pwu::Time now]
+
+	#----------------------------------------------------------------------------
+	#READING CAD MODEL
+	CAD_Read
+
+	#----------------------------------------------------------------------------
+	#READING WAVE AT TRAILING EDGE
+	set wavelist [list {*}[lrange $meshparacol 4 10] $wave_sg $span]
+	set wavelab [list {*}[lrange $defParas 4 10] WV_NOD span]
+	set wscales [list $Wave_inVScale $Wave_outVScale]
+	set woutdegs [list $Wave_outTopVdeg $Wave_outBottomVdeg]
+
+	Wave_Update $wavelab $wavelist $geoDir
+
+	WaveRead
+
+	set blkexam [pw::Examine create BlockVolume]
+
+	#----------------------------------------------------------------------------
+	#PREPARING THE TOPOLOGY FOR MESH AND GENERATING THE MESH
+	Topo_Prep_Mesh $Wavy_Percent
+	#
+	#----------------------------------------------------------------------------
+	set fexmod [open "$scriptDir/CAE_export.out" w]
+	#
+	#----------------------------------------------------------------------------
+	WaveRemesh $wscales $woutdegs
+	#
+	#DOMAIN EXAMINE
+	$blkexam examine
+	set blkexamv [$blkexam getMinimum]
+
+	#----------------------------------------------------------------------------
+	#CAE EXPORT
+	CAE_Export
+
+	pw::Display saveView 1 [list {0.50 -0.015 0.5} {-0.10 0.47 0.0} {-0.89 -0.28 -0.35} 86.46 2.53]
+	pw::Display recallView 1
+
+	set time_end [pwu::Time now]
+	set runtime [pwu::Time subtract $time_end $time_start]
+	set tmin [expr int([lindex $runtime 0]/60)]
+	set tsec [expr [lindex $runtime 0]%60]
+	set tmsec [expr int(floor([lindex $runtime 1]/1000))]
+
+	puts $fexmod [string repeat - 50]
+	puts $fexmod "runtime: $tmin min $tsec sec $tmsec ms" 
+	puts $fexmod [string repeat - 50]
+	close $fexmod
+
+	puts "GRID INFO WRITTEN TO CAE_export.out"
+	puts $symsep
+	puts "COMPLETE!"
+
+	exit
+}
+
 #-------------------------------------- RESET APPLICATION--------------------------------------
 pw::Application reset
 pw::Application clearModified
@@ -94,75 +179,49 @@ ParamDefualt [file join $scriptDir "defaultMeshParameters.glf"]
 
 set MeshParameters ""
 
-set symsep [string repeat = 105]
-set symsepd [string repeat . 105]
-set symsepdd [string repeat - 105]
+if [pw::Application isInteractive] {
 
-if {[llength $argv] != 0} {
-	set MeshParameters [lindex $argv 0]
+	pw::Script loadTK
+
+	set cwd [pwd]
+
+	proc meshparametersgui { } {
+
+		global cwd MeshParameters
+
+		cd $cwd
+		if { $MeshParameters == "" } {
+
+			set types {
+ 				{{GLYPH Files}  {.glf}}
+ 				{{All Files}      *   }
+ 			}
+
+			set initDir $::cwd
+			set fullFilename [tk_getOpenFile -initialdir $initDir -filetypes $types]
+			set MeshParameters [file tail $fullFilename]
+			set cwd [file dirname $MeshParameters]
+		}
+	}
+
+	wm title . "WAVY MESHER"
+	grid [ttk::frame .c -padding "5 5 5 5"] -column 0 -row 0 -sticky nwes
+	grid columnconfigure . 0 -weight 1; grid rowconfigure . 0 -weight 1
+	grid [ttk::labelframe .c.lf -padding "5 5 5 5" -text "SELECT MESH PARAMETERS"]
+
+	grid [ttk::button .c.lf.mfl -text "MESHING INPUT" -command meshparametersgui]                           -row 1 -column 1 -sticky e
+	grid [ttk::entry .c.lf.mfe -width 60 -textvariable MeshParameters]                             -row 1 -column 2 -sticky e
+	grid [ttk::button .c.lf.gob -text "MESH" -command WAVYMESHER]                            -row 3 -column 2 -sticky e
+	foreach w [winfo children .c.lf] {grid configure $w -padx 5 -pady 5}
+	focus .c.lf.mfl
+	::tk::PlaceWindow . widget
+	bind . <Return> { WAVYMESHER }
+
+} else {
+
+	if {[llength $argv] != 0} {
+		set MeshParameters [lindex $argv 0]
+	}
+	
+	WAVYMESHER
 }
-
-puts $symsepdd
-
-#----------------------------------------------------------------------------
-#READING AND UPDATING GRID PARAMETERS AND VARIABLES
-Config_Prep
-
-puts $symsepdd
-puts "GRID GUIDELINE: Level: $res_lev | Y+: $ypg | Delta_S(m): $dsg | GR: $grg | Chordwise_Spacing(m): $chord_sg"
-puts $symsep
-
-set time_start [pwu::Time now]
-
-#----------------------------------------------------------------------------
-#READING CAD MODEL
-CAD_Read
-
-#----------------------------------------------------------------------------
-#READING WAVE AT TRAILING EDGE
-set wavelist [list {*}[lrange $meshparacol 4 10] $wave_sg $span]
-set wavelab [list {*}[lrange $defParas 4 10] WV_NOD span]
-set wscales [list $Wave_inVScale $Wave_outVScale]
-set woutdegs [list $Wave_outTopVdeg $Wave_outBottomVdeg]
-
-Wave_Update $wavelab $wavelist $geoDir
-
-WaveRead
-
-set blkexam [pw::Examine create BlockVolume]
-
-#----------------------------------------------------------------------------
-#PREPARING THE TOPOLOGY FOR MESH AND GENERATING THE MESH
-Topo_Prep_Mesh $Wavy_Percent
-#
-#----------------------------------------------------------------------------
-set fexmod [open "$scriptDir/CAE_export.out" w]
-#
-#----------------------------------------------------------------------------
-WaveRemesh $wscales $woutdegs
-#
-#DOMAIN EXAMINE
-$blkexam examine
-set blkexamv [$blkexam getMinimum]
-
-#----------------------------------------------------------------------------
-#CAE EXPORT
-CAE_Export
-
-pw::Display saveView 1 [list {0.50 -0.015 0.5} {-0.10 0.47 0.0} {-0.89 -0.28 -0.35} 86.46 2.53]
-pw::Display recallView 1
-
-set time_end [pwu::Time now]
-set runtime [pwu::Time subtract $time_end $time_start]
-set tmin [expr int([lindex $runtime 0]/60)]
-set tsec [expr [lindex $runtime 0]%60]
-set tmsec [expr int(floor([lindex $runtime 1]/1000))]
-
-puts $fexmod [string repeat - 50]
-puts $fexmod "runtime: $tmin min $tsec sec $tmsec ms" 
-puts $fexmod [string repeat - 50]
-close $fexmod
-
-puts "GRID INFO WRITTEN TO CAE_export.out"
-puts $symsep
-puts "COMPLETE!"

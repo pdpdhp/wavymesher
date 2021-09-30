@@ -81,7 +81,7 @@ set cae_solver                   CGNS;# (Exp. SU2 or CGNS)
 set POLY_DEG                       Q1;# (Q1:Linear - Q4:quartic) | FOR SU2 ONLY Q1
 
 #ENABLES CAE EXPORT 
-set cae_export                    YES;# (YES/NO)
+set cae_export                     NO;# (YES/NO)
 
 #SAVES NATIVE FORMATS 
 set save_native                    NO;# (YES/NO)

@@ -84,7 +84,7 @@ set POLY_DEG                       Q1;# (Q1:Linear - Q4:quartic) | FOR SU2 ONLY 
 set cae_export                    YES;# (YES/NO)
 
 #SAVES NATIVE FORMATS 
-set save_native                    NO;# (YES/NO)
+set save_native                   YES;# (YES/NO)
 
 #-------------------------------------- GRID GUIDELINE--------------------------------------
 

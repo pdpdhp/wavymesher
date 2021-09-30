@@ -10,16 +10,8 @@
 proc CAE_Export { } {
 
 	global blk blktop blkbot blkte scriptDir save_native
-	
-	upvar 1 cae_solver cae_fmt
-	upvar 1 POLY_DEG ply_degree
-	upvar 1 GRD_TYP grid_type
-	upvar 1 symsepdd asep
-	upvar 1 res_lev grid_level
-	upvar 1 blkexamv minVol1
-	upvar 1 wMinVolv minVol2
-	upvar 1 cae_export caeexprt
-	upvar 1 fexmod outfile
+	global cae_solver POLY_DEG GRD_TYP symsepdd res_lev 
+	global blkexamv wMinVolv cae_export fexmod
 	
 	#==============================================CAE Export--==========================================
 
@@ -38,9 +30,9 @@ proc CAE_Export { } {
 
 	set dashes [string repeat - 50]
 
-	if {[string compare $cae_fmt CGNS]==0} {
+	if {[string compare $cae_solver CGNS]==0} {
 		pw::Application setCAESolverAttribute CGNS.FileType adf
-		pw::Application setCAESolverAttribute ExportPolynomialDegree $ply_degree
+		pw::Application setCAESolverAttribute ExportPolynomialDegree $POLY_DEG
 	}
 
 	#assigning BCs
@@ -210,33 +202,33 @@ proc CAE_Export { } {
 								[expr int($blkncell%1000000000)] 0 2]m"
 	}
 
-	append 3dgridname $grid_type "_" Q2D "_" lev $grid_level "_" $blkID "_" $ply_degree
+	append 3dgridname $GRD_TYP "_" Q2D "_" lev $res_lev "_" $blkID "_" $POLY_DEG
 	
-	puts $outfile [string repeat - 50]
+	puts $fexmod [string repeat - 50]
 		
-	puts $outfile "QUASI 2D MULTIBLOCK STRUCTURED GRID | FLATBACK PROFILE | GRID LEVEL $grid_level:"
-	puts $asep
-	puts "QUASI 2D GRID GENERATED FOR LEVEL $grid_level | TOTAL CELLS: $blkncell HEX"
-	puts $asep
+	puts $fexmod "QUASI 2D MULTIBLOCK STRUCTURED GRID | FLATBACK PROFILE | GRID LEVEL $res_lev:"
+	puts $symsepdd
+	puts "QUASI 2D GRID GENERATED FOR LEVEL $res_lev | TOTAL CELLS: $blkncell HEX"
+	puts $symsepdd
 
-	puts $outfile [string repeat - 50]
-	puts $outfile "total blocks: [llength $blkncells]"
-	puts $outfile "total cells: $blkncell cells"
-	puts $outfile "min volume: [format "%*e" 5 [expr min($minVol1, $minVol2)]]"
+	puts $fexmod [string repeat - 50]
+	puts $fexmod "total blocks: [llength $blkncells]"
+	puts $fexmod "total cells: $blkncell cells"
+	puts $fexmod "min volume: [format "%*e" 5 [expr min($blkexamv, $wMinVolv)]]"
 		
 		
-	if {[string compare $caeexprt YES]==0} {
+	if {[string compare $cae_export YES]==0} {
 		# creating export directory
 		set exportDir [file join $scriptDir grids/2dquasi]
 
 		file mkdir $exportDir
 		
-		puts $outfile [string repeat - 50]
+		puts $fexmod [string repeat - 50]
 		# CAE specificity in the output file!
-		puts $outfile "Current solver: [set curSolver [pw::Application getCAESolver]]"
+		puts $fexmod "Current solver: [set curSolver [pw::Application getCAESolver]]"
 
 		set validExts [pw::Application getCAESolverAttribute FileExtensions]
-		puts $outfile "Valid file extensions: '$validExts'"
+		puts $fexmod "Valid file extensions: '$validExts'"
 
 		set defExt [lindex $validExts 0]
 
@@ -248,32 +240,32 @@ proc CAE_Export { } {
 			Folder   { set dest $exportDir }
 			default  { return -code error "Unexpected FileDestination value" }
 		}
-		puts $outfile "Exporting to $destType: '$dest'"
-		puts $outfile [string repeat - 50]
+		puts $fexmod "Exporting to $destType: '$dest'"
+		puts $fexmod [string repeat - 50]
 
 		# Initialize the CaeExport mode
 		set status abort  ;
 		if { ![$caex initialize $dest] } {
-			puts $outfile {$caex initialize failed!}
+			puts $fexmod {$caex initialize failed!}
 		} else {
 			if { ![catch {$caex setAttribute FilePrecision Double}] } {
-				puts $outfile "setAttribute FilePrecision Double"
+				puts $fexmod "setAttribute FilePrecision Double"
 			}
 
 			if { ![$caex verify] } {
-				puts $outfile {$caex verify failed!}
+				puts $fexmod {$caex verify failed!}
 			} elseif { ![$caex canWrite] } {
-				puts $outfile {$caex canWrite failed!}
+				puts $fexmod {$caex canWrite failed!}
 			} elseif { ![$caex write] } {
-				puts $outfile {$caex write failed!}
+				puts $fexmod {$caex write failed!}
 			} elseif { 0 != [llength [set feCnts [$caex getForeignEntityCounts]]] } {
 			# print entity counts reported by the exporter
 			set fmt {   %-22.22s | %6.6s |}
-			puts $outfile "Number of grid entities exported:"
-			puts $outfile [format $fmt {Entity Type} Count]
-			puts $outfile [format $fmt $dashes $dashes]
+			puts $fexmod "Number of grid entities exported:"
+			puts $fexmod [format $fmt {Entity Type} Count]
+			puts $fexmod [format $fmt $dashes $dashes]
 			dict for {key val} $feCnts {
-				puts $outfile [format $fmt $key $val]
+				puts $fexmod [format $fmt $key $val]
 			}
 			set status end ;# all is okay now
 			}
@@ -282,12 +274,12 @@ proc CAE_Export { } {
 		# Display any errors/warnings
 		set errCnt [$caex getErrorCount]
 		for {set ndx 1} {$ndx <= $errCnt} {incr ndx} {
-			puts $outfile "[$caex getErrorCode $ndx]: '[$caex getErrorInformation $ndx]'"
+			puts $fexmod "[$caex getErrorCode $ndx]: '[$caex getErrorInformation $ndx]'"
 		}
 		# abort/end the CaeExport mode
 		$caex $status
 	
-		puts "info: QUASI 2D $ply_degree GRID: $3dgridname.$defExt EXPORTED IN GRID DIR."
+		puts "info: QUASI 2D $POLY_DEG GRID: $3dgridname.$defExt EXPORTED IN GRID DIR."
 	}
 
 	if {[string compare $save_native YES]==0} {

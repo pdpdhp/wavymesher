@@ -12,11 +12,7 @@ proc Topo_Prep_Mesh {wavyp} {
 	global ypg dsg grg chord_sg ter_sg ler_sg tpts_sg exp_sg imp_sg vol_sg Total_Height res_lev
 	global model_2D model_Q2D span fixed_snodes span_dimension
 	global N_third rightcon_top rightcon_bot airfoilfront left_hte right_hte leftcons rmesh_trsdoms middoms
-	global blk blkexam
-	
-	upvar 1 GRD_TYP grid_type
-	upvar 1 cae_solver cae_fmt
-	upvar 1 w1_y wavepts
+	global blk blkexam cae_solver w1_y GRD_TYP
 	
 	set Xzone [expr 1.0 - $wavyp/100.]
 	
@@ -106,9 +102,9 @@ proc Topo_Prep_Mesh {wavyp} {
 	$spanSpc addEntity [lindex $leftcons 2]
 	$spanSpc examine
 	set spanSpcv [$spanSpc getMaximum]
-	set trnstp [expr [llength $wavepts]-1]
+	set trnstp [expr [llength $w1_y]-1]
 	
-	pw::Application setCAESolver $cae_fmt 3
+	pw::Application setCAESolver $cae_solver 3
 	
 	lappend alldoms [lindex $dom_left_spa 1]
 	lappend alldoms [lindex [lindex $dom_left_spd 0] 1]
@@ -116,7 +112,7 @@ proc Topo_Prep_Mesh {wavyp} {
 	lappend alldoms [lindex [lindex $dom_left_spc 1] 1]
 
 	
-	if {[string compare $grid_type STR]==0} {
+	if {[string compare $GRD_TYP STR]==0} {
 		set fstr [pw::FaceStructured createFromDomains $alldoms]
 		
 		
