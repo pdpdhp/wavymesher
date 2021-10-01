@@ -53,13 +53,8 @@ proc CAD_Read { } {
 		if {[string compare $GRD_TYP STR]==0} {
 			puts "STRUCTURED MULTIBLOCK GRID SELECTED | FLATBACK SECTION IMPORTED."
 			puts $asep
-		} 
-	} else {
-		puts "PLEASE SELECT THE RIGHT AIRFOIL!"
-		exit -1
-	}
-
-	if {[string compare $airfoil FLATBACK]==0} {
+		}
+		
 		#Import Geometry
 		set tmp_model [pw::Application begin DatabaseImport]
 		  $tmp_model initialize -strict -type Automatic $geoDir/flatbackquilted.iges
