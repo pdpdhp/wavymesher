@@ -90,7 +90,8 @@ proc WAVYMESHER {} {
 	upvar 1 WAVE_GEN_METHOD wv_mtd
 	upvar 1 WAVE_TYPE wv_typ
 	upvar 1 WAVE_DEPTH wv_dpth
-	upvar 1 ENDS ends
+	upvar 1 ENDSU endsu
+	upvar 1 ENDSL endsl
 	
 	set symsep [string repeat = 105]
 	set symsepd [string repeat . 105]
@@ -135,8 +136,10 @@ proc WAVYMESHER {} {
 	
 	#----------------------------------------------------------------------------
 	#READING WAVE AT TRAILING EDGE
-	set wavelist [list {*}[lrange $meshparacol 6 10] $wave_sg $span {*}[lrange $meshparacol 15 16] $ends]
-	set wavelab [list {*}[lrange $defParas 6 10] WV_NOD span ZZ_Atop ZZ_Abot ENDS]
+	set wavelist [list {*}[lrange $meshparacol 6 10] $wave_sg $span \
+					{*}[lrange $meshparacol 15 16] $endsu $endsl]
+
+	set wavelab [list {*}[lrange $defParas 6 10] WV_NOD span ZZ_Atop ZZ_Abot ENDSU ENDSL]
 	set wscales [lrange $meshparacol 11 12]
 	set woutdegs [lrange $meshparacol 13 14]
 

@@ -9,7 +9,7 @@
 
 proc MDL_GEN { flatback } {
 	
-	global span nxnodes nynodes airfoil_mdl nprofile FLTB_Crvs0 TE_thk ENDS
+	global span nxnodes nynodes airfoil_mdl nprofile FLTB_Crvs0 TE_thk ENDSU ENDSL
 	
 	upvar 1 symsepdd asep
 	
@@ -42,12 +42,13 @@ proc MDL_GEN { flatback } {
 	
 	if { ! [string compare $flt NO]} { surface_scale [list $FLTB_Crvs0 $FLTB_Crvs1] }
 	
-	set ENDS_u [lindex [[lindex $FLTB_Crvs0 0] getXYZ -arc 1] 1]
-	set ENDS_l [lindex [[lindex $FLTB_Crvs0 1] getXYZ -arc 1] 1]
+	set ENDS_u [[lindex $FLTB_Crvs0 0] getXYZ -arc 1]
+	set ENDS_l [[lindex $FLTB_Crvs0 1] getXYZ -arc 1]
 	
-	set TE_thk [expr abs($ENDS_u - $ENDS_l)]
+	set TE_thk [expr abs([lindex $ENDS_u 1] - [lindex $ENDS_l 1])]
 	
-	set ENDS "$ENDS_u,$ENDS_l"
+	set ENDSU "[lindex $ENDS_u 0],[lindex $ENDS_u 1],[lindex $ENDS_u 2]"
+	set ENDSL "[lindex $ENDS_l 0],[lindex $ENDS_l 1],[lindex $ENDS_l 2]"
 	
 	pw::Entity transform [pwu::Transform translation [list 0 0 $span]] $FLTB_Crvs1
 	
