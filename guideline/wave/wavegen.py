@@ -26,7 +26,7 @@ NO = 0
 #
 #----------------------------Wave Specifications--------------------
 #Wave Type
-WAVE_TYPE = [W2]
+WAVE_TYPE = [W3]
 #
 #
 #Wave Depth
@@ -42,7 +42,7 @@ AMPLITUDE = [0.0125]
 #
 #
 #Number of waves in lateral direction
-NUM_WAVE = [4]
+NUM_WAVE = [4,1]
 #
 #
 #Number of points per wave in lateral direction
@@ -62,11 +62,11 @@ ZZ_Abot = [0]
 #
 #
 # ending point heights
-ENDSU = [1.0,0.05,0.0]
+ENDSU = [1.0,0.025,0.0]
 #
 #
 # ending point heights
-ENDSL = [1.0,-0.05,0.0]
+ENDSL = [1.0,-0.025,0.0]
 #
 #====================================================================
 #

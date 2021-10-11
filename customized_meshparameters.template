@@ -22,11 +22,11 @@ set GRD_TYP                       STR;# STR (for STRUCTURED)
 #====================================================
 #indicate if you need to generate flatback profile based on your input airfoil coordinates
 
-set FLATBACK_GEN                   NO;# (YES/NO)
+set FLATBACK_GEN                  NO;# (YES/NO)
 
-set FLATBACK_GEN_METHOD       default;# (default/DU97function) method to distribute thickness
+set FLATBACK_GEN_METHOD      default;# (default/DU97function) method to distribute thickness
 
-set FLATBACK_PERCENT               10;# (%) percent of chord length
+set FLATBACK_PERCENT              10;# (%) percent of chord length
 
 #WAVINESS SPECIFICATION FOR FLATBACK PROFILE
 #====================================================
