@@ -62,11 +62,11 @@ ZZ_Abot = [0]
 #
 #
 # ending point heights
-ENDSU = [1.0,0.03860100000000001,0.0]
+ENDSU = [1.0,0.05,0.0]
 #
 #
 # ending point heights
-ENDSL = [1.0,-0.051656,0.0]
+ENDSL = [1.0,-0.05,0.0]
 #
 #====================================================================
 #
@@ -131,8 +131,9 @@ fzbot_pos = ["%.8f" % zbot for zbot in zbot_pos]
 ffztop_pos = [float(i) for i in fztop_pos]
 ffzbot_pos = [float(i) for i in fzbot_pos]
 
-print(ffztop_pos)
-print (ffzbot_pos)
+ffztop_pos[-1] = ENDSU[1]
+ffzbot_pos[-1] = ENDSL[1]
+
 #------------------GRID PROPERTISE--------------
 wave1=np.column_stack((ffxtop_pos, y_pos, ffztop_pos))
 

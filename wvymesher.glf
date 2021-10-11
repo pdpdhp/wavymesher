@@ -84,7 +84,7 @@ proc WAVYMESHER {} {
 	global res_lev ypg dsg grg chord_sg
 	global scriptDir fexmod waveDir blkexam blkexamv
 	global defParas meshparacol wave_sg span 
-	global symsepdd
+	global symsepdd ZZ_Abot ZZ_Atop
 	
 	upvar 1 WAVE_PERCENT wv_prct
 	upvar 1 WAVE_GEN_METHOD wv_mtd
@@ -127,17 +127,26 @@ proc WAVYMESHER {} {
 	MDL_GEN [lrange $meshparacol 2 4]
 
 	#----------------------------------------------------------------------------
+	#INCOMPATIBLE WAVY SPECIFICATIONS
 	if { [string compare $wv_mtd spline]!=0 && [string compare $wv_typ W1]==0 } {
-		puts "ONLY SPLINE WAVE METHOD IS NOT COMPATIBLE WITH $wv_typ \
-					(i.e. SINE WAVE) WITH $wv_dpth% WAVE DEPTH."
+		puts "ONLY SPLINE WAVE METHOD IS NOT COMPATIBLE WITH:"
+		puts "$wv_typ (i.e. SINE WAVE) WITH $wv_dpth% WAVE DEPTH."
 		puts $symsep
 		exit -1
 	}
 	
+	if { [string compare $wv_mtd spline]!=0 && ($ZZ_Abot!=0 || $ZZ_Atop!=0) } {
+		puts "ONLY SPLINE WAVE METHOD IS COMPATIBLE WITH ROTATING WAVINESS."
+		puts "info: wave's rotational angles will be ignord."
+		puts $symsep
+		set ZZ_Abot 0
+		set ZZ_Atop 0
+	}
+
 	#----------------------------------------------------------------------------
 	#READING WAVE AT TRAILING EDGE
 	set wavelist [list {*}[lrange $meshparacol 6 10] $wave_sg $span \
-					{*}[lrange $meshparacol 15 16] $endsu $endsl]
+						$ZZ_Atop $ZZ_Abot $endsu $endsl]
 
 	set wavelab [list {*}[lrange $defParas 6 10] WV_NOD span ZZ_Atop ZZ_Abot ENDSU ENDSL]
 	set wscales [lrange $meshparacol 11 12]
