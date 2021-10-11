@@ -147,7 +147,7 @@ proc blend_wave { mtd dpth prct wave_bcon wave_tcon airfoilfront leftcons domtrs
 		
 		foreach wbt [lrange $wbcon_sp 0 end-1] wtc [lrange $wtcon_sp 0 end-1] \
 					aft [lrange $aft_sp 0 end-1] afb [lrange $afb_sp 0 end-1] {
-		
+			
 			set dpth_local [expr 100*(1-(abs([lindex [$wtc getXYZ -arc 1] 2] - \
 							[lindex [$wbt getXYZ -arc 1] 2])/$TE_thk))]
 
@@ -217,7 +217,7 @@ proc blend_wave { mtd dpth prct wave_bcon wave_tcon airfoilfront leftcons domtrs
 	set airfoil_ft [pw::Connector join $aft_sp]
 	set airfoil_fb [pw::Connector join $afb_sp]
 	
-	puts "WAVY SURFACE IS BLENDED USING $mtd OVER $prct% of CHORD WITH $dpth% WAVE DEPTH!"
+	puts "WAVY SURFACE IS BLENDED USING $mtd METHOD OVER $prct% of CHORD WITH $dpth% WAVE DEPTH!"
 	puts $asep
 	
 	return [list $domwte_top $domwte_bot]

@@ -84,12 +84,13 @@ proc WAVYMESHER {} {
 	global res_lev ypg dsg grg chord_sg
 	global scriptDir fexmod waveDir blkexam blkexamv
 	global defParas meshparacol wave_sg span 
-#	global WAVE_inVScale WAVE_outVScale WAVE_outTopVdeg WAVE_outBottomVdeg
 	global symsepdd
 	
 	upvar 1 WAVE_PERCENT wv_prct
 	upvar 1 WAVE_GEN_METHOD wv_mtd
+	upvar 1 WAVE_TYPE wv_typ
 	upvar 1 WAVE_DEPTH wv_dpth
+	upvar 1 ENDS ends
 	
 	set symsep [string repeat = 105]
 	set symsepd [string repeat . 105]
@@ -125,16 +126,27 @@ proc WAVYMESHER {} {
 	MDL_GEN [lrange $meshparacol 2 4]
 
 	#----------------------------------------------------------------------------
+	if { [string compare $wv_mtd spline]!=0 && [string compare $wv_typ W1]==0 } {
+		puts "ONLY SPLINE WAVE METHOD IS NOT COMPATIBLE WITH $wv_typ \
+					(i.e. SINE WAVE) WITH $wv_dpth% WAVE DEPTH."
+		puts $symsep
+		exit -1
+	}
+	
+	#----------------------------------------------------------------------------
 	#READING WAVE AT TRAILING EDGE
-	set wavelist [list {*}[lrange $meshparacol 6 10] $wave_sg $span {*}[lrange $meshparacol 15 16]]
-	set wavelab [list {*}[lrange $defParas 6 10] WV_NOD span ZZ_Atop ZZ_Abot]
+	set wavelist [list {*}[lrange $meshparacol 6 10] $wave_sg $span {*}[lrange $meshparacol 15 16] $ends]
+	set wavelab [list {*}[lrange $defParas 6 10] WV_NOD span ZZ_Atop ZZ_Abot ENDS]
 	set wscales [lrange $meshparacol 11 12]
 	set woutdegs [lrange $meshparacol 13 14]
 
 	Wave_Update $wavelab $wavelist $waveDir
 
 	WaveRead
-
+	
+	puts "WAVE TYPE: $wv_typ | METHOD: $wv_mtd | DEPTH (%): $wv_dpth | WAVY PERCENT (%): $wv_prct "
+	puts $symsep
+	
 	set blkexam [pw::Examine create BlockVolume]
 
 	#----------------------------------------------------------------------------
