@@ -1,10 +1,10 @@
 # =============================================================
 # This script is written to generate structured multi-block
-# grid with different TE waviness over the DU97-flatback profile 
-# according to grid guideline.
+# grid with almost any types of waviness at TE for almost any 
+# airfoil according to the grid guideline.
 #==============================================================
 # written by Pay Dehpanah
-# last update: Sep 2021
+# last update: Oct 2021
 #==============================================================
 
 proc CAE_Export { } {
@@ -207,7 +207,7 @@ proc CAE_Export { } {
 	puts $fexmod [string repeat - 50]
 		
 	puts $fexmod "QUASI 2D MULTIBLOCK STRUCTURED GRID | FLATBACK PROFILE | GRID LEVEL $res_lev:"
-	puts $symsepdd
+
 	puts "QUASI 2D GRID GENERATED FOR LEVEL $res_lev | TOTAL CELLS: $blkncell HEX"
 	puts $symsepdd
 

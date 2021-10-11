@@ -1,76 +1,90 @@
 # =============================================================
 # This script is written to generate structured multi-block
-# grid with different TE waviness over the DU97-flatback profile 
-# according to grid guideline.
+# grid with almost any types of waviness at TE for almost any 
+# airfoil according to the grid guideline.
 #==============================================================
 # written by Pay Dehpanah
-# last update: Sep 2021
+# last update: Oct 2021
 #==============================================================
-
-#            DU97 Flatback PROFILE:
-#=====================================================
-set airfoil                  FLATBACK;#
 
 #               GRID REFINEMENT LEVEL:
 #=====================================================
-#Grid Levels vary from the first line (finest, level 0) of the grid_specification.txt to the last line (coarsest, level 6)!
-set res_lev                         3;# From  0 (finest) to 6 (coarsest)
+#Grid Levels vary from the first line (finest, level 0) 
+#corresponding to last to first elements of grid guideline below.
+set res_lev                         4;# From  0 (finest) to (coarsest) | last elements are for coarsest
 
 #GRID SYSTEM'S ARRANGEMENT: STRUCTURED OR UNSTRUCTRED
 #====================================================
 #PLEASE SELECT GRID SYSTEM:
-set GRD_TYP                       STR;# STR (for STRUCTURED) | UNSTR (for UNSTRUCTURED)
+set GRD_TYP                       STR;# STR (for STRUCTURED)
+
+#FLATBACK PROFILE GENERATION BASED ON INPUT AIRFOIL
+#====================================================
+#indicate if you need to generate flatback profile based on your input airfoil coordinates
+
+set FLATBACK_GEN                   NO;# (YES/NO)
+
+set FLATBACK_GEN_METHOD       default;# (default/DU97function) method to distribute thickness
+
+set FLATBACK_PERCENT               10;# (%) percent of chord length
+
+#WAVINESS SPECIFICATION FOR FLATBACK PROFILE
+#====================================================
+#inidcate how do you want to generate waviness at TE on your flatback airfoil
+
+set WAVE_GEN_METHOD           default;# (default/DU97function/spline) method to distribute thickness on waves
+
+#types of wavyness
+set WAVE_TYPE                      W2;# W1: sine function | W2: cosine function (uses wave depth)| W3: cos.sin
+
+#Percent of min/max thickness
+set WAVE_DEPTH                     50;# ratio of min to max thickness at wavy TE
+
+#Percent of waviness at TE
+set WAVE_PERCENT                   10;# (%) percent of chord length on which waviness grows at TE 
+
+#Wavy Parameters
+set AMPLITUDE                  0.0125;# ampl. of wave for only for W1 and W3 types
+
+#Number of Waves 
+set NUM_WAVE                        4;# W2 needs even number | W3 needs two numbers (i.e. 4,1) --> cos and sin
+
+#WAVY PARAMETERS ONLY FOR SPLINE METHOD FOR WAVY STREAMWISE THICKNESS DISTRIBUTION 
+#----------------------------------------------------------------------------------
+#wave inner surface tangent vector scale
+set WAVE_inVScale                 1.5;# tangent vector scale where wave meets surface
+
+#wave outter surface tangent vector scale
+set WAVE_outVScale                0.9;# tangent vector scale where wave ends at TE 
+
+#wave tanget vector angle (degree) at 100% chord | TOP
+set WAVE_outTopVdeg               5.4;# (default/ a real number)
+
+#wave tanget vector angle (degree) at 100% chord | BOTTOM
+set WAVE_outBottomVdeg           15.0;# (default/ a real number)
+
+#top wave rotational angle | TOP
+set ZZ_Atop                         0;# (deg) lets wave rotates counter clockwise at upper edge
+
+#bottom wave rotational angle | BOTTOM
+set ZZ_Abot                         0;# (deg) lets wave rotates clockwise at lower edge
 
 # STRUCTURED SETTINGS:
 #====================================================
-#total height for farfield boundary condition
-set Total_Height                  600;# 
-
-#types of wavyness
-set Wave_Type                      W2;# W1: sine function | W2: cosine function (uses wave depth)| W3: cos.sin
-
-#Percent of min/max thickness
-set Wave_Depth                     50;# ratio of min to max thickness at TE
-
-#Percent of waviness at TE
-set Wavy_Percent                   10;# percent of waviness at TE 
-
-#top wave rotational angle
-set ZZ_Atop                         0;# 
-
-#bottom wave rotational angle
-set ZZ_Abot                         0;# 
-
-#Wavy Parameters
-set Amplitude                  0.0125;# effective only for W1 and W3
-
-#Number of Waves 
-set Num_Wave                        4;# for W3 needs two numbers (i.e. 4,1) indicating cos and sin no. of waves | W2 requires even number
-
-#wave inner surface tangent vector scale
-set Wave_inVScale                 1.5;# inner tangent vector scale where wave meets the DU97 surface
-
-#wave outter surface tangent vector scale
-set Wave_outVScale                0.4;# outter tangent vector scale where wave ends at TE.
-
-#wave tanget vector angle (degree) at 100% chord | TOP
-set Wave_outTopVdeg              18.4;# (Default or a real number to indicate angle of wave at 100% TE)
-
-#wave tanget vector angle (degree) at 100% chord | BOTTOM
-set Wave_outBottomVdeg           15.0;# (Default or a real number to indicate angle of wave at 100% TE)
-
+# approximate total diameter of o-type grid 
+set TOTAL_HEIGHT                  600;# 
 
 # GRID DIMENSION:
 #===================================================
 #SPAN DIMENSION FOR QUASI 2D MODEL IN -Y DIRECTION
-set span                          1.0;# MAXIMUM 3.0
+set span                          1.0;#
 
 #Fix number of points in spanwise direction? If YES, indicate number of points below. 
 set fixed_snodes                   NO;# (YES/NO)
 
-#Number of points in spanwise direction. If you opt NO above, This parameter will be ignored
-# and will be set automatically based on maximum spacing over wing, slat and flap.
-set span_dimension                 44;# Only when fixed_snodes is NO
+#Number of points in spanwise direction. When NO, it will be ignored and set
+# automatically based on maximum spacing over profile.
+set span_dimension                 44;# effective only when fixed_snodes is NO
 
 #CAE EXPORT:
 #===================================================
@@ -86,33 +100,34 @@ set cae_export                    YES;# (YES/NO)
 #SAVES NATIVE FORMATS 
 set save_native                   YES;# (YES/NO)
 
-#-------------------------------------- GRID GUIDELINE--------------------------------------
+#---------------------GRID GUIDELINE SPECIFICATIONS--------------------------------
+#EACH CORRESPONDING ELEMENT REPRESENT A GRID LEVEL INDICATED AT TOP TO BE GENERATED
 
 #TARGET Y PLUS FOR RANS AND HYBRID RANS/LES
-set TARG_YPR                           {0.04488,0.08977,1.0,3.591,10.181}
+set TARG_YPR                                    {0.04488,0.08977,1.0,3.591,10.181}
 
 #BOUNDARY BLOCK CELL GROWTH RATE
-set TARG_GR                                    {1.12,1.14,1.16,1.18,1.25}
+set TARG_GR                                             {1.12,1.14,1.16,1.18,1.25}
 
 # CHORDWISE SPACING ACCORDING TO GRID GUIDELINE
-set CHR_SPC                     {0.0019375,0.003875,0.00775,0.0155,0.051}
+set CHR_SPC                              {0.0019375,0.003875,0.00775,0.0155,0.051}
 
 # WAVE SPAVING GUIDELINE
-set WV_NOD                                                {56,36,20,12,5}
+set WV_NOD                                                         {56,36,20,12,5}
 
 # TRAILING EDGE SPACING RATIO ACCORDING TO GRID GUIDELINE
-set TE_SRT                  {0.00048,0.0012025,0.001925,0.0047625,0.0076}
+set TE_SRT                           {0.00048,0.0012025,0.001925,0.0047625,0.0076}
 
 # TRAILING EDGE NUMBER OF POINTS ACCORDING TO GRID GUIDELINE
-set TE_PT                                               {160,80,40,20,10}
+set TE_PT                                                        {160,80,40,20,10}
 
 # EXPLICIT EXTRUSION FACTORS ACCORDING TO GRID GUIDELINE
-set EXP_FAC                                         {0.9,0.9,0.9,0.9,0.9}
+set EXP_FAC                                                  {0.9,0.9,0.9,0.9,0.9}
 
 # IMPLICIT EXTRUSION FACTORS ACCORDING TO GRID GUIDELINE
-set IMP_FAC                                         {100,100,100,100,100}
+set IMP_FAC                                                  {100,100,100,100,100}
 
 # NORMAL EXTRUSION VOLUME RATIO ACCORDING TO GRID GUIDELINE
-set VOL_FAC                                     {0.45,0.45,0.45,0.45,0.5}
+set VOL_FAC                                              {0.45,0.45,0.45,0.45,0.5}
 
 #------------------------------------------------------------------------------------------

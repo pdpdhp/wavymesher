@@ -1,10 +1,10 @@
 # =============================================================
 # This script is written to generate structured multi-block
-# grid with different TE waviness over the DU97-flatback profile 
-# according to grid guideline.
+# grid with almost any types of waviness at TE for almost any 
+# airfoil according to the grid guideline.
 #==============================================================
 # written by Pay Dehpanah
-# last update: Sep 2021
+# last update: Oct 2021
 #==============================================================
 
 proc MGuideLine {ref_lev guidedir} {
@@ -62,9 +62,9 @@ proc MGuideLine {ref_lev guidedir} {
 
 proc WaveRead { } {
 	
-	global geoDir w1_x w1_y w1_z w2_x w2_y w2_z
+	global waveDir w1_x w1_y w1_z w2_x w2_y w2_z
 	
-	set fp1 [open "$geoDir/wave/wave_bot.txt" r]
+	set fp1 [open "$waveDir/wave_bot.txt" r]
 
 	set i 0
 	while {[gets $fp1 line] >= 0} {
@@ -76,7 +76,7 @@ proc WaveRead { } {
 	}
 	close $fp1
 	
-	set fp2 [open "$geoDir/wave/wave_top.txt" r]
+	set fp2 [open "$waveDir/wave_top.txt" r]
 
 	set i 0
 	while {[gets $fp2 line] >= 0} {

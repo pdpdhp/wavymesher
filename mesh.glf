@@ -1,20 +1,20 @@
 # =============================================================
 # This script is written to generate structured multi-block
-# grid with different TE waviness over the DU97-flatback profile 
-# according to grid guideline.
+# grid with almost any types of waviness at TE for almost any 
+# airfoil according to the grid guideline.
 #==============================================================
 # written by Pay Dehpanah
-# last update: Sep 2021
+# last update: Oct 2021
 #==============================================================
 
 proc Topo_Prep_Mesh {wavyp} {
 	
-	global ypg dsg grg chord_sg ter_sg ler_sg tpts_sg exp_sg imp_sg vol_sg Total_Height res_lev
+	global ypg dsg grg chord_sg ter_sg ler_sg tpts_sg exp_sg imp_sg vol_sg TOTAL_HEIGHT res_lev
 	global model_2D model_Q2D span fixed_snodes span_dimension
 	global N_third rightcon_top rightcon_bot airfoilfront left_hte right_hte leftcons rmesh_trsdoms middoms
-	global blk blkexam cae_solver w1_y GRD_TYP
+	global blk blkexam cae_solver w1_y GRD_TYP chordln Xzone
 	
-	set Xzone [expr 1.0 - $wavyp/100.]
+	set Xzone [expr $chordln - ($wavyp*$chordln)/100.]
 	
 	set DBall [pw::Database getAll]
 	
@@ -24,7 +24,7 @@ proc Topo_Prep_Mesh {wavyp} {
 	
 	set Consdb [pw::Connector createOnDatabase -parametricConnectors Aligned -merge 0 [list $DBmod]]
 	
-	set Refcon_sp [[lindex $Consdb end] split [[lindex $Consdb end] getParameter -Z 0]]
+	set Refcon_sp [lrange $Consdb 3 4]
 	
 	foreach con $Refcon_sp {
 		$con setDimensionFromSpacing $chord_sg
@@ -45,15 +45,13 @@ proc Topo_Prep_Mesh {wavyp} {
 		lappend leftcons [lindex $con 1]
 	}
 	
-	set left_hte [lindex $Consdb 2]
-	set right_hte [lindex $Consdb 0]
+	set left_hte [lindex $Consdb end]
+	set right_hte [lindex $Consdb end-1]
 	$right_hte delete
 	
-	[lindex $Consdb 1] delete
-	set usless2 [lrange $Consdb 3 end-1]
-	
-	foreach con2 $usless2 {
-		$con2 delete
+	# removing unnecessary connectors
+	foreach con [list {*}[lrange $Consdb 0 2] {*}[lrange $Consdb end-3 end-2]] {
+		$con delete
 	} 
 	
 	$left_hte setDimension $tpts_sg
@@ -72,7 +70,7 @@ proc Topo_Prep_Mesh {wavyp} {
 	$dom_left setExtrusionSolverAttribute SpacingGrowthFactor $grg
 	$dom_left setExtrusionSolverAttribute NormalMaximumStepSize \
 		[expr [[lindex $leftcons 1] getAverageSpacing]*[lindex $maxstepfac $res_lev]]
-	$dom_left setExtrusionSolverAttribute StopAtHeight $Total_Height
+	$dom_left setExtrusionSolverAttribute StopAtHeight $TOTAL_HEIGHT
 	$dom_left setExtrusionSolverAttribute NormalExplicitSmoothing $exp_sg
 	$dom_left setExtrusionSolverAttribute NormalImplicitSmoothing $imp_sg
 	$dom_left setExtrusionSolverAttribute NormalKinseyBarthSmoothing 0.0
@@ -104,7 +102,7 @@ proc Topo_Prep_Mesh {wavyp} {
 	set spanSpcv [$spanSpc getMaximum]
 	set trnstp [expr [llength $w1_y]-1]
 	
-	pw::Application setCAESolver $cae_solver 3
+#	pw::Application setCAESolver $cae_solver 3
 	
 	lappend alldoms [lindex $dom_left_spa 1]
 	lappend alldoms [lindex [lindex $dom_left_spd 0] 1]
