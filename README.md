@@ -9,7 +9,7 @@ the flatback model. At the end of the program the whole quasi 2D structured grid
 Batch
 -----
 ```shell
-pointwise -b wvymesher.glf ?MeshParameters.glf? airfoil_coordinates.txt <airfoil File>
+pointwise -b wvymesher.glf ?MeshParameters.glf? airfoil_coordinates.txt <airfoil file>
 ```
 
 GUI
