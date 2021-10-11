@@ -21,16 +21,16 @@ proc GridFlowprop_Update {plablist meshvlist guidedir} {
 	return 0
 }
 
-proc Wave_Update {plablist meshvlist geoDir} {
+proc Wave_Update {plablist meshvlist waveDir} {
 	
 	set k 28
 		
 	foreach label $plablist param $meshvlist {
-		exec sed -i "0,/$label/{/$label/d;}" $geoDir/wave/wavegen.py
-		exec sed -i "$k a $label = \[$param\]" $geoDir/wave/wavegen.py
+		exec sed -i "0,/$label/{/$label/d;}" $waveDir/wavegen.py
+		exec sed -i "$k a $label = \[$param\]" $waveDir/wavegen.py
 		incr k 4
 	} 
 	
-	exec python3 $geoDir/wave/wavegen.py
+	exec python3 $waveDir/wavegen.py
 	return 0
 }
