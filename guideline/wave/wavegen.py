@@ -104,8 +104,6 @@ elif WAVE_TYPE[0] == W3:
 	ztop_pos = ENDSU[1] - AMPLITUDE * np.cos(np.radians(nperiod[0]*np.array(y_pos))) * np.sin(np.radians(nperiod[1]*np.array(y_pos)))
 	zbot_pos =  - ENDSL[1] + AMPLITUDE * np.cos(np.radians(nperiod[0]*np.array(y_pos))) * np.sin(np.radians(nperiod[1]*np.array(y_pos)))
 
-print (AMPLITUDE)
-print (max_thick)
 topnodes = np.stack((np.array(xtop_pos-1), np.array(ztop_pos-ENDSU[1])))
 botnodes = np.stack((np.array(xbot_pos-1), np.array(zbot_pos+ENDSL[1])))
 
