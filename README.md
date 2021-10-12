@@ -75,25 +75,25 @@ Wavy Spline Method:
 When spline is selected for wavy parametrization, spline segment vector are used to keep C1 continuty where wave meets the surface of flatback model. To manipulate the shape of spline curve where wave meets the flatback surface, WAVE\_Begin\_Segment\_Scale can be modified. To manipulate the shape of spline where wave ends at the end of the chord, WAVE\_End\_Segment_Scale can be adjusted. To manipulate the ending points of spline curve where wave ends, two angles WAVE\_Top\_Segment\_Angle and WAVE\_Bottom\_Segment\_Angle can be modified representing the spline of upper and lower waves. First one rotates clockwise, second one rotates counter-clockwise. In addition, upper and lower wavy curves at 100% of chord can be rotated along the latheral direction to have zig-zig shape of waves at trailing edge. These two rotational angles can be adjusted by WAVE\_Rotational\_Angle\_Top and WAVE\_Rotational\_Angle\_Bottom.
 
 ```shell
-#WAVY PARAMETERS ONLY FOR SPLINE METHOD TO DISTRIBUTE WAVY STREAMWISE THICKNESS
-#------------------------------------------------------------------------------
-#wave inner surface tangent vector scale
-set WAVE_inVScale                 1.5;# tangent vector scale where wave meets surface
+#WAVY PARAMETERS ONLY FOR SPLINE METHOD 
+#----------------------------------------------------
+#wave inner surface tangent vector scale 
+set WAVE_Begin_Segment_Scale      1.5;# tangent vector scale where wave meets surface
 
-#wave outter surface tangent vector scale
-set WAVE_outVScale                0.9;# tangent vector scale where wave ends at TE 
+#wave outter surface tangent vector scale 
+set WAVE_End_Segment_Scale        0.9;# tangent vector scale where wave ends at TE 
 
-#wave tanget vector angle (degree) at 100% chord | TOP
-set WAVE_outTopVdeg               5.4;# (default/ a real number)
+#wave tanget vector angle (degree) at 100% chord | TOP 
+set WAVE_Top_Segment_Angle        5.4;# (default OR a real number)
 
-#wave tanget vector angle (degree) at 100% chord | BOTTOM
-set WAVE_outBottomVdeg           15.0;# (default/ a real number)
+#wave tanget vector angle (degree) at 100% chord | BOTTOM 
+set WAVE_Bottom_Segment_Angle    15.0;# (default OR a real number)
 
-#top wave rotational angle | TOP
-set ZZ_Atop                         0;# (deg) lets wave rotates counter clockwise at upper edge
+#top wave rotational angle | TOP 
+set WAVE_Rotational_Angle_Top       0;# (deg) lets wave rotates counter clockwise at upper edge
 
-#bottom wave rotational angle | BOTTOM
-set ZZ_Abot                         0;# (deg) lets wave rotates clockwise at lower edge
+#bottom wave rotational angle | BOTTOM 
+set WAVE_Rotational_Angle_Bottom    0;# (deg) lets wave rotates clockwise at lower edge
 ```
 
 Mesh Specificity:
