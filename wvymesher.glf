@@ -194,7 +194,7 @@ proc WAVYMESHER {} {
 	puts $fexmod [string repeat - 50]
 	close $fexmod
 
-	puts "GRID INFO WRITTEN TO CAE_export.out"
+	puts "GRID INFO WRITTEN TO 'CAE_export.out'"
 	puts $symsep
 	puts "COMPLETE!"
 

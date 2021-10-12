@@ -14,6 +14,8 @@ proc MDL_GEN { flatback } {
 	upvar 1 symsepdd asep
 	upvar 1 NprofullFilename nprofile
 	
+	set nprofile [lindex [split $nprofile '/'] end]
+	
 	set flt [lindex $flatback 0]
 	set fltmethod [lindex $flatback 1]
 	set fltpercent [lindex $flatback 2]

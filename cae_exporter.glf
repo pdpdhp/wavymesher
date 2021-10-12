@@ -279,7 +279,7 @@ proc CAE_Export { } {
 		# abort/end the CaeExport mode
 		$caex $status
 	
-		puts "info: QUASI 2D $POLY_DEG GRID: $3dgridname.$defExt EXPORTED IN GRID DIR."
+		puts "info: QUASI 2D $POLY_DEG GRID: '$3dgridname.$defExt' EXPORTED IN GRID DIR."
 	}
 
 	if {[string compare $save_native YES]==0} {
@@ -287,6 +287,6 @@ proc CAE_Export { } {
 		file mkdir $exportDir
 		pw::Application save "$exportDir/$3dgridname.pw"
 		
-		puts "info: NATIVE FORMAT: $3dgridname.pw SAVED IN GRID DIR."
+		puts "info: NATIVE FORMAT: '$3dgridname.pw' SAVED IN GRID DIR."
 	}
 }
