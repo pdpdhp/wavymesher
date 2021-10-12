@@ -38,7 +38,7 @@ proc Config_Prep { } {
 
 proc CAD_Read { airfoilp } {
 	
-	global cae_solver GRD_TYP nprofile nxnodes nynodes chordln
+	global cae_solver GRD_TYP nprofile nxnodes nynodes chordln NprofullFilename
 	
 	upvar 1 symsepdd asep
 	
@@ -55,7 +55,7 @@ proc CAD_Read { airfoilp } {
 		puts $asep
 	} 
 	
-	if { $nprofile != "" } {
+	if { $NprofullFilename != "" } {
 		
 		set fpmod [open $airfoilp r]
 
@@ -63,7 +63,6 @@ proc CAD_Read { airfoilp } {
 			lappend nxnodes [expr [lindex [split $line ","] 0]*1000]
 			lappend nynodes [expr [lindex [split $line ","] 1]*1000]
 		}
-
 		close $fpmod
 		
 		set chordln [expr [tcl::mathfunc::max {*}$nxnodes]/1000]
@@ -74,13 +73,14 @@ proc CAD_Read { airfoilp } {
 	} else {
 	
 		puts "PLEASE INDICATE AIRFOIL COORDINATES AS INPUT."
+		exit -1
 	
 	}
 }
 
 proc WAVYMESHER {} {
 	
-	global MeshParameters nprofile
+	global MeshParameters nprofile NprofullFilename
 	global res_lev ypg dsg grg chord_sg
 	global scriptDir fexmod waveDir blkexam blkexamv
 	global defParas meshparacol wave_sg span 
@@ -97,13 +97,13 @@ proc WAVYMESHER {} {
 	set symsepd [string repeat . 105]
 	set symsepdd [string repeat - 105]
 	
-	if { $nprofile == "" } {
+	if { $NprofullFilename == "" } {
 		if [pw::Application isInteractive] {
-			set nprofile [tk_getOpenFile]
+			set NprofullFilename [tk_getOpenFile]
 		}
 	}
 
-	if { ! [file readable $nprofile] } {
+	if { ! [file readable $NprofullFilename] } {
 		puts "WITHOUT AIRFOIL COORDINATES AS INPUT THIS SCRIPT DOESN'T WORK."
 		puts "AIRFOIL COORDINATES: $nprofile does not exist or is not readable"
 		exit -1
@@ -121,7 +121,7 @@ proc WAVYMESHER {} {
 
 	#----------------------------------------------------------------------------
 	#READING INPUT AIRFOIL COORDINATES
-	CAD_Read [file join $scriptDir "$nprofile"]
+	CAD_Read $NprofullFilename
 	
 	#GENERATING THE MODEL BASED ON INPUT AIRFOIL
 	MDL_GEN [lrange $meshparacol 2 4]
@@ -225,16 +225,19 @@ ParamDefualt [file join $scriptDir "defaultMeshParameters.glf"]
 
 set MeshParameters ""
 set nprofile ""
+set NprofullFilename ""
 
 if [pw::Application isInteractive] {
 
 	pw::Script loadTK
 
+	set wkrdir [pwd]
+	
 	proc meshparametersgui { } {
 
-		global scriptDir MeshParameters
+		global wkrdir MeshParameters
 
-		cd $scriptDir
+		cd $wkrdir
 		if { $MeshParameters == "" } {
 
 			set types {
@@ -242,21 +245,21 @@ if [pw::Application isInteractive] {
  				{{All Files}      *   }
  			}
 
-			set initDir $::scriptDir
-			set fullFilename [tk_getOpenFile -initialdir $initDir -filetypes $types]
-			set MeshParameters [file tail $fullFilename]
+			set initDir $::wkrdir
+			set MparafullFilename [tk_getOpenFile -initialdir $initDir -filetypes $types]
+			set MeshParameters [file tail $MparafullFilename]
 		}
 	}
 	
 	proc airfoilp { } {
 
-		global scriptDir nprofile
-		cd $scriptDir
+		global wkrdir nprofile NprofullFilename
+		cd $wkrdir
 
-		if { $nprofile != "" } {
+		if { $NprofullFilename != "" } {
 
-			validateFile $nprofile exists
-			puts "Input airfoil coordinates: $nprofile"
+			validateFile $NprofullFilename exists
+			puts "Input airfoil coordinates: $NprofullFilename"
 
 		} else {
 
@@ -264,10 +267,10 @@ if [pw::Application isInteractive] {
 				{{Text Files}  {.txt}}
 				{{All Files}      *  }
 			}
-
-			set initDir $::scriptDir
-			set fullFilename [tk_getOpenFile -initialdir $initDir -filetypes $types]
-			set nprofile [file tail $fullFilename]
+			
+			set initDir $::wkrdir
+			set NprofullFilename [tk_getOpenFile -initialdir $initDir -filetypes $types]
+			set nprofile [file tail $NprofullFilename]
 		}
 	}
 
@@ -291,9 +294,16 @@ if [pw::Application isInteractive] {
 	bind . <Return> { WAVYMESHER }
 
 } else {
-
-	if {[llength $argv] != 0} {
+	
+	if {[llength $argv] == 2} {
 		set MeshParameters [lindex $argv 0]
+		set NprofullFilename [lindex $argv 1]
+	} elseif {[llength $argv] == 1} {
+		set NprofullFilename [lindex $argv 0]
+	} else {
+	  puts "Invalid command line input! WITHOUT AIRFOIL COORDINATES AS INPUT THIS PROGRAM DOESN'T WORK."
+	  puts "pointwise -b wvymesher.glf ?MeshParameters.glf? airfoil_coordinates.txt <airfoil file>"
+	  exit
 	}
 	
 	WAVYMESHER

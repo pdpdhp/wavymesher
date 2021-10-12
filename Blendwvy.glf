@@ -217,7 +217,7 @@ proc blend_wave { mtd dpth prct wave_bcon wave_tcon airfoilfront leftcons domtrs
 	set airfoil_ft [pw::Connector join $aft_sp]
 	set airfoil_fb [pw::Connector join $afb_sp]
 	
-	puts "WAVY SURFACE IS BLENDED USING $mtd METHOD OVER $prct% of CHORD WITH $dpth% WAVE DEPTH!"
+	puts "WAVY SURFACE IS BLENDED USING $mtd METHOD OVER $prct% of CHORD WITH [format %.2f $dpth]% WAVE DEPTH!"
 	puts $asep
 	
 	return [list $domwte_top $domwte_bot]
