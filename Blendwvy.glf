@@ -44,7 +44,39 @@ proc blend_wave { mtd dpth prct wave_bcon wave_tcon airfoilfront leftcons domtrs
 		
 	set aft_sp [[[[lindex $airfoilfront 1] getEdge 2] getConnector 1] split -I \
 		[.. 2 [[[[lindex $airfoilfront 1] getEdge 2] getConnector 1] getDimension]]]
+	
+	set midDimTop [[lindex $leftcons 0] getDimension]
+	set midDimBot [[lindex $leftcons 3] getDimension]
+	
+	set midDisTop [[lindex $leftcons 0] getDistribution 1]
+	set midDisBot [[lindex $leftcons 3] getDistribution 1]
+	
+	foreach wbt [lrange $wbcon_sp 0 end-1] wtc [lrange $wtcon_sp 0 end-1] \
+						aft [lrange $aft_sp 0 end-1] afb [lrange $afb_sp 0 end-1] {
+		
+		lappend seg_tspl [pw::SegmentSpline create]
+			[lindex $seg_tspl end] addPoint [$wtc getPosition -arc 1]
+			[lindex $seg_tspl end] addPoint [$aft getPosition -arc 1]
+			[lindex $seg_tspl end] setSlope Free
 
+		lappend crvT_con [pw::Connector create]
+			[lindex $crvT_con end] addSegment [lindex $seg_tspl end]
+		
+		lappend seg_bspl [pw::SegmentSpline create]
+			[lindex $seg_bspl end] addPoint [$afb getPosition -arc 1]
+			[lindex $seg_bspl end] addPoint [$wbt getPosition -arc 1]
+			[lindex $seg_bspl end] setSlope Free
+
+		lappend crvB_con [pw::Connector create]
+			[lindex $crvB_con end] addSegment [lindex $seg_bspl end]
+		
+		[lindex $crvT_con end] setDimension $midDimTop
+		[lindex $crvT_con end] setDistribution 1 [$midDisTop copy]
+
+		[lindex $crvB_con end] setDimension $midDimBot
+		[lindex $crvB_con end] setDistribution 1 [$midDisBot copy]
+	}
+	
 	if { [string compare $mtd spline]==0 } {
 	
 		set lft_slpin [pwu::Vector3 subtract [[lindex $leftcons 0] getXYZ -grid \
@@ -102,51 +134,27 @@ proc blend_wave { mtd dpth prct wave_bcon wave_tcon airfoilfront leftcons domtrs
 			lappend lfout_svecs [pwu::Vector3 scale $outvec [lindex $wscales 1]]
 		}
 
-		foreach wbt [lrange $wbcon_sp 0 end-1] wtc [lrange $wtcon_sp 0 end-1] \
-						aft [lrange $aft_sp 0 end-1] afb [lrange $afb_sp 0 end-1] {
+		foreach tseg $seg_tspl tcrv $crvT_con bseg $seg_bspl bcrv $crvB_con {
 			
-			set seg_spl [pw::SegmentSpline create]
-			$seg_spl addPoint [$wtc getPosition -arc 1]
-			$seg_spl addPoint [$aft getPosition -arc 1]
-			$seg_spl setSlope Free
-			$seg_spl setSlopeOut 1 [lindex $lfout_svecs 0]
-			$seg_spl setSlopeIn 2 [lindex $lfin_svecs 0]
-			set seg_crvT [pw::Curve create]
-			$seg_crvT addSegment $seg_spl
+			set tseg_c [$tcrv getSegment -copy 1]
+			$tseg_c setSlopeOut 1 [lindex $lfout_svecs 0]
+			$tseg_c setSlopeIn 2 [lindex $lfin_svecs 0]
+			$tcrv addSegment $tseg_c
 			
-			
-			set seg_spl [pw::SegmentSpline create]
-			$seg_spl addPoint [$afb getPosition -arc 1]
-			$seg_spl addPoint [$wbt getPosition -arc 1]
-			$seg_spl setSlope Free
-			$seg_spl setSlopeOut 1 [lindex $lfin_svecs 1]
-			$seg_spl setSlopeIn 2 [lindex $lfout_svecs 1]
-			set seg_crvB [pw::Curve create]
-			$seg_crvB addSegment $seg_spl
-			
-			lappend crvT_con [pw::Connector createOnDatabase $seg_crvT]
-			lappend crvB_con [pw::Connector createOnDatabase $seg_crvB]
-			
-			[lindex $crvT_con end] setDimension [[lindex $leftcons 0] getDimension]
-			[lindex $crvT_con end] setDistribution 1 \
-						[[[lindex $leftcons 0] getDistribution 1] copy]
-			
-			[lindex $crvB_con end] setDimension [[lindex $leftcons 3] getDimension]
-			[lindex $crvB_con end] setDistribution 1 \
-						[[[lindex $leftcons 3] getDistribution 1] copy]
+			set bseg_c [$bcrv getSegment -copy 1]
+			$bseg_c setSlopeOut 1 [lindex $lfin_svecs 1]
+			$bseg_c setSlopeIn 2 [lindex $lfout_svecs 1]
+			$bcrv addSegment $bseg_c
 			
 		}
 	
 	} elseif { [string compare $mtd default] || [string compare $mtd DU97function] } {
 		
-		foreach node [.. 2 [[lindex $leftcons 0] getDimension]] {
-			lappend wvy_Xpos [lindex [ [lindex $leftcons 0] getXYZ -grid $node] 0]
-		}
-
 		RotTrsCrvs $FLTB_Crvs0 0 -90
-		
+
 		foreach wbt [lrange $wbcon_sp 0 end-1] wtc [lrange $wtcon_sp 0 end-1] \
-					aft [lrange $aft_sp 0 end-1] afb [lrange $afb_sp 0 end-1] {
+				aft [lrange $aft_sp 0 end-1] afb [lrange $afb_sp 0 end-1] \
+					tcrv $crvT_con bcrv $crvB_con {
 			
 			set dpth_local [expr 100*(1-(abs([lindex [$wtc getXYZ -arc 1] 2] - \
 							[lindex [$wbt getXYZ -arc 1] 2])/$TE_thk))]
@@ -166,25 +174,9 @@ proc blend_wave { mtd dpth prct wave_bcon wave_tcon airfoilfront leftcons domtrs
 			set yCord [lindex [$aft getXYZ -arc 1] 1]
 
 			RotTrsCrvs [list {*}[lindex $flt_wvyt 1] {*}[lindex $flt_wvyb 1]] $yCord 90
-			
-			set midtop_pts []
-			set midbot_pts []
-			
-			foreach xpos $wvy_Xpos {
-				lappend midtop_pts [[lindex $flt_wvyt 1] getXYZ -X $xpos]
-				lappend midbot_pts [[lindex $flt_wvyb 1] getXYZ -X $xpos]
-			}
-			
-			lappend crvT_con [pw::Connector createFromPoints [list [$aft getXYZ -arc 1]\
-							{*}[lreverse $midtop_pts] [$wtc getXYZ -arc 1]] ]
-			
-			lappend crvB_con [pw::Connector createFromPoints [list [$afb getXYZ -arc 1]\
-							{*}[lreverse $midbot_pts] [$wbt getXYZ -arc 1]] ]
 
-			pw::Entity project -type ClosestPoint \
-							[lindex $crvT_con end] [lindex $flt_wvyt 1]
-			pw::Entity project -type ClosestPoint \
-							[lindex $crvB_con end] [lindex $flt_wvyb 1]
+			pw::Entity project -type ClosestPoint $tcrv [lindex $flt_wvyt 1]
+			pw::Entity project -type ClosestPoint $bcrv [lindex $flt_wvyb 1]
 		}
 
 	} else {
@@ -200,13 +192,13 @@ proc blend_wave { mtd dpth prct wave_bcon wave_tcon airfoilfront leftcons domtrs
 				[[[lindex $domtrs 2] getEdge 1] getConnector 1]]
 
 	for {set j 0} {$j<[expr [llength $midtop_cons]-1]} {incr j} {
-	lappend dmw_top [pw::DomainStructured createFromConnectors \
-		 [list [lindex $midtop_cons $j] [lindex $aft_sp $j] [lindex $wtcon_sp $j] \
-				   [lindex $midtop_cons [expr $j+1]] ]] 
+		lappend dmw_top [pw::DomainStructured createFromConnectors \
+			[list [lindex $midtop_cons $j] [lindex $aft_sp $j] [lindex $wtcon_sp $j] \
+					[lindex $midtop_cons [expr $j+1]] ]]
 
-	lappend dmw_bot [pw::DomainStructured createFromConnectors \
-		 [list [lindex $midbot_cons $j] [lindex $afb_sp $j] [lindex $wbcon_sp $j] \
-					   [lindex $midbot_cons [expr $j+1]] ]] 
+		lappend dmw_bot [pw::DomainStructured createFromConnectors \
+			[list [lindex $midbot_cons $j] [lindex $afb_sp $j] [lindex $wbcon_sp $j] \
+					[lindex $midbot_cons [expr $j+1]] ]] 
 	}
 
 	set domwte_top [pw::DomainStructured join $dmw_top]

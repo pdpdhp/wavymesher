@@ -8,7 +8,7 @@
 #==============================================================
 
 #               GRID REFINEMENT LEVEL:
-#=====================================================
+#====================================================
 #Grid Levels vary from the first line (finest, level 0) 
 #corresponding to last to first elements of grid guideline below.
 set res_lev                         4;# From  0 (finest) to (coarsest) | last elements are for coarsest
@@ -22,11 +22,11 @@ set GRD_TYP                       STR;# STR (for STRUCTURED)
 #====================================================
 #indicate if you need to generate flatback profile based on your input airfoil coordinates
 
-set FLATBACK_GEN                  NO;# (YES/NO)
+set FLATBACK_GEN                  YES;# (YES/NO)
 
-set FLATBACK_GEN_METHOD      default;# (default/DU97function) method to distribute thickness
+set FLATBACK_GEN_METHOD       default;# (default/DU97function) method to distribute thickness
 
-set FLATBACK_PERCENT              10;# (%) percent of chord length
+set FLATBACK_PERCENT               10;# (%) percent of chord length
 
 #WAVINESS SPECIFICATION FOR FLATBACK PROFILE
 #====================================================
@@ -49,33 +49,33 @@ set AMPLITUDE                  0.0125;# ampl. of wave for only for W1 and W3 typ
 #Number of Waves 
 set NUM_WAVE                        4;# W2 needs even number | W3 needs two numbers (i.e. 4,1) --> cos and sin
 
-#WAVY PARAMETERS ONLY FOR SPLINE METHOD FOR WAVY STREAMWISE THICKNESS DISTRIBUTION 
-#----------------------------------------------------------------------------------
-#wave inner surface tangent vector scale
-set WAVE_inVScale                 1.5;# tangent vector scale where wave meets surface
+#WAVY PARAMETERS ONLY FOR SPLINE METHOD 
+#----------------------------------------------------
+#wave inner surface tangent vector scale 
+set WAVE_Begin_Segment_Scale      1.5;# tangent vector scale where wave meets surface
 
-#wave outter surface tangent vector scale
-set WAVE_outVScale                0.9;# tangent vector scale where wave ends at TE 
+#wave outter surface tangent vector scale 
+set WAVE_End_Segment_Scale        0.9;# tangent vector scale where wave ends at TE 
 
-#wave tanget vector angle (degree) at 100% chord | TOP
-set WAVE_outTopVdeg               5.4;# (default/ a real number)
+#wave tanget vector angle (degree) at 100% chord | TOP 
+set WAVE_Top_Segment_Angle        5.4;# (default OR a real number)
 
-#wave tanget vector angle (degree) at 100% chord | BOTTOM
-set WAVE_outBottomVdeg           15.0;# (default/ a real number)
+#wave tanget vector angle (degree) at 100% chord | BOTTOM 
+set WAVE_Bottom_Segment_Angle    15.0;# (default OR a real number)
 
-#top wave rotational angle | TOP
-set ZZ_Atop                         0;# (deg) lets wave rotates counter clockwise at upper edge
+#top wave rotational angle | TOP 
+set WAVE_Rotational_Angle_Top       0;# (deg) lets wave rotates counter clockwise at upper edge
 
-#bottom wave rotational angle | BOTTOM
-set ZZ_Abot                         0;# (deg) lets wave rotates clockwise at lower edge
+#bottom wave rotational angle | BOTTOM 
+set WAVE_Rotational_Angle_Bottom    0;# (deg) lets wave rotates clockwise at lower edge
 
-# STRUCTURED SETTINGS:
+#STRUCTURED SETTINGS:
 #====================================================
 # approximate total diameter of o-type grid 
 set TOTAL_HEIGHT                  600;# 
 
-# GRID DIMENSION:
-#===================================================
+#GRID DIMENSION:
+#====================================================
 #SPAN DIMENSION FOR QUASI 2D MODEL IN -Y DIRECTION
 set span                          1.0;#
 
@@ -86,6 +86,14 @@ set fixed_snodes                   NO;# (YES/NO)
 # automatically based on maximum spacing over profile.
 set span_dimension                 44;# effective only when fixed_snodes is NO
 
+#MODEL EXPORT:
+#===================================================
+#TO EXPORT FLATBACK MODEL'S CAD FILE
+set FLATBACK_export               YES;# (YES/NO)
+
+#TOP EXPORT WAVY FLATBACK MODEL'S CAD FILE
+set WAVY_FLATBACK_export          YES;# (YES/NO)
+
 #CAE EXPORT:
 #===================================================
 #CAE SOLVER SELECTION. 
@@ -95,13 +103,13 @@ set cae_solver                   CGNS;# (Exp. SU2 or CGNS)
 set POLY_DEG                       Q1;# (Q1:Linear - Q4:quartic) | FOR SU2 ONLY Q1
 
 #ENABLES CAE EXPORT 
-set cae_export                    YES;# (YES/NO)
+set cae_export                     NO;# (YES/NO)
 
 #SAVES NATIVE FORMATS 
-set save_native                   YES;# (YES/NO)
+set save_native                    NO;# (YES/NO)
 
 #---------------------GRID GUIDELINE SPECIFICATIONS--------------------------------
-#EACH CORRESPONDING ELEMENT REPRESENT A GRID LEVEL INDICATED AT TOP TO BE GENERATED
+#EACH CORRESPONDING ELEMENT REPRESENT A GRID LEVEL INDICATED AT TOP
 
 #TARGET Y PLUS FOR RANS AND HYBRID RANS/LES
 set TARG_YPR                                    {0.04488,0.08977,1.0,3.591,10.181}
@@ -122,10 +130,10 @@ set TE_SRT                           {0.00048,0.0012025,0.001925,0.0047625,0.007
 set TE_PT                                                        {160,80,40,20,10}
 
 # EXPLICIT EXTRUSION FACTORS ACCORDING TO GRID GUIDELINE
-set EXP_FAC                                                  {0.9,0.9,0.9,0.9,0.9}
+set EXP_FAC                                                  {0.1,0.1,0.1,0.1,0.1}
 
 # IMPLICIT EXTRUSION FACTORS ACCORDING TO GRID GUIDELINE
-set IMP_FAC                                                  {100,100,100,100,100}
+set IMP_FAC                                                  {0.2,0.2,0.2,0.2,0.2}
 
 # NORMAL EXTRUSION VOLUME RATIO ACCORDING TO GRID GUIDELINE
 set VOL_FAC                                              {0.45,0.45,0.45,0.45,0.5}

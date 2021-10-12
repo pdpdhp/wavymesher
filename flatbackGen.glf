@@ -298,16 +298,35 @@ proc Flbk_NdDis {Flbk_Tag Ucrv Lcrv FLT_PRC {reDis 50}} {
 
 #upper surface/lower surface
 proc uplow_surfaces { xnodes ynodes } {
+	
+	set smr_swth [expr [lindex $ynodes 0] - [lindex $ynodes end]]
 
 	set min_nxnodes [tcl::mathfunc::min {*}$xnodes]
 	set min_inx [lsearch $xnodes $min_nxnodes]
-
+	
 	foreach upx [lrange $xnodes 0 $min_inx] upy [lrange $ynodes 0 $min_inx] {
 		lappend upper_surf [list $upx $upy 0]
 	}
 
 	foreach lwx [lrange $xnodes $min_inx end] lwy [lrange $ynodes $min_inx end] {
 		lappend lower_surf [list $lwx $lwy 0]
+	}
+	
+	if { $smr_swth < 0 } {
+
+		set low [lreverse $upper_surf]
+		set upper_surf [lreverse $lower_surf]
+		set lower_surf $low
+
+	} elseif { $smr_swth == 0} {
+
+		set smr_swth [expr [lindex $ynodes 1] - [lindex $ynodes end-1]]
+
+		if { $smr_swth < 0 } {
+			set low [lreverse $upper_surf]
+			set upper_surf [lreverse $lower_surf]
+			set lower_surf $low
+		}
 	}
 
 	return [list [lreverse $upper_surf] $lower_surf]

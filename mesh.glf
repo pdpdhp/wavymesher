@@ -64,6 +64,7 @@ proc Topo_Prep_Mesh {wavyp} {
 	set dom_left [pw::DomainStructured create]
 	$dom_left addEdge $leftedge
 	set leftxtr [pw::Application begin ExtrusionSolver [list $dom_left]]
+	$leftxtr setKeepFailingStep true
 	$dom_left setExtrusionSolverAttribute NormalMarchingMode Plane
 	$dom_left setExtrusionSolverAttribute NormalMarchingVector {-0 1 -0}
 	$dom_left setExtrusionSolverAttribute NormalInitialStepSize $dsg
@@ -76,7 +77,17 @@ proc Topo_Prep_Mesh {wavyp} {
 	$dom_left setExtrusionSolverAttribute NormalKinseyBarthSmoothing 0.0
 	$dom_left setExtrusionSolverAttribute NormalVolumeSmoothing $vol_sg
 	$leftxtr run 900
-	$leftxtr end
+	
+	#checking stop condition
+	set stopCond [$leftxtr getStopConditionData [lindex [$leftxtr getRunResult] 1]]
+
+	if { [string compare [lindex $stopCond 2] Height] } {
+		puts "NORMAL EXTRUSION FAILED! PLEASE CHECK YOUR INPUT FILE'S GRID SPECIFICATIONS!"
+		$leftxtr end
+		exit -1
+	} else {
+		$leftxtr end
+	}
 	
 	set dom_left_spa [$dom_left split -I [list [expr $tpts_sg + \
 		[[lindex $leftcons 0] getDimension] - 1] [expr $tpts_sg + [[lindex $leftcons 0] getDimension] \
@@ -101,8 +112,6 @@ proc Topo_Prep_Mesh {wavyp} {
 	$spanSpc examine
 	set spanSpcv [$spanSpc getMaximum]
 	set trnstp [expr [llength $w1_y]-1]
-	
-#	pw::Application setCAESolver $cae_solver 3
 	
 	lappend alldoms [lindex $dom_left_spa 1]
 	lappend alldoms [lindex [lindex $dom_left_spd 0] 1]
@@ -134,6 +143,7 @@ proc Topo_Prep_Mesh {wavyp} {
 		$domtrn end
 	} else {
 		$domtrn run [expr $span_dimension-1]
+		#checking stop condition
 		if {[string compare [lindex [$domtrn getRunResult] 0] Completed]!=0} {
 			puts "TRANSLATE EXTRUSION FAILED! PLEASE CHECK YOUR INPUT FILE!"
 			$domtrn end

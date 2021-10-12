@@ -10,11 +10,12 @@
 proc MDL_GEN { flatback } {
 	
 	global span nxnodes nynodes airfoil_mdl FLTB_Crvs0 TE_thk ENDSU ENDSL
+	global airfoil_input
 	
 	upvar 1 symsepdd asep
 	upvar 1 NprofullFilename nprofile
 	
-	set nprofile [lindex [split $nprofile '/'] end]
+	set airfoil_input [lindex [split $nprofile '/'] end]
 	
 	set flt [lindex $flatback 0]
 	set fltmethod [lindex $flatback 1]
@@ -70,7 +71,7 @@ proc MDL_GEN { flatback } {
 	$LE_Crv addSegment $seg_le
 	
 	foreach crv0 $FLTB_Crvs0 crv1 $FLTB_Crvs1 crvte $TE_Crvs {
-		
+
 		lappend airfoil_Srfs [pw::Surface create]
 		
 		[lindex $airfoil_Srfs end] patch -tolerance 1e-20 -surfaceTolerance 1e-20 \
@@ -89,7 +90,7 @@ proc MDL_GEN { flatback } {
 		puts $asep
 	
 	} else {
-		puts "QUASI 2D MODEL IS GENERATED BASED ON '$nprofile' OVER $span SPAN."
+		puts "QUASI 2D MODEL IS GENERATED BASED ON '$airfoil_input' OVER $span SPAN."
 		puts $asep
 	}
 	

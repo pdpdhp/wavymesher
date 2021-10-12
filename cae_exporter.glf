@@ -12,6 +12,7 @@ proc CAE_Export { } {
 	global blk blktop blkbot blkte scriptDir save_native
 	global cae_solver POLY_DEG GRD_TYP symsepdd res_lev 
 	global blkexamv wMinVolv cae_export fexmod
+	global airfoil_mdl airfoil_input domairqbc
 	
 	#==============================================CAE Export--==========================================
 
@@ -289,4 +290,65 @@ proc CAE_Export { } {
 		
 		puts "info: NATIVE FORMAT: '$3dgridname.pw' SAVED IN GRID DIR."
 	}
+	
+	proc WavyCAD_export { } {
+		
+		global domairqbc airfoil_input scriptDir symsepdd
+		
+		set exportDir [file join $scriptDir grids/models]
+		file mkdir $exportDir
+		append wfltbackname [lindex [split $airfoil_input .] 0] "_" wavyflatback
+		
+		set wfltex [pw::Application begin GridExport $domairqbc]
+		$wfltex initialize -strict -type IGES "$exportDir/$wfltbackname.iges"
+		$wfltex setAttribute DomainSurfaceDegree Bicubic
+		$wfltex setAttribute FileUnits Meters
+		$wfltex verify
+		$wfltex write
+		$wfltex end
+		
+		set wavy_database [pw::Database import "$exportDir/$wfltbackname.iges"]
+		
+		set wavy_mdl \
+		[pw::Model assemble -quiltMaximumAngle 180 -quiltBoundaryMaximumAngle 0 $wavy_database]
+		
+		set wfltex [pw::Application begin DatabaseExport $wavy_mdl]
+		$wfltex initialize -strict -type IGES "$exportDir/$wfltbackname.iges"
+		$wfltex setAttribute PointwiseCompatibilityMode false
+		$wfltex setAttribute FileUnits Meters
+		$wfltex verify
+		$wfltex write
+		$wfltex end
+		
+		puts "WAVY FLATBACK MODEL: '$wfltbackname.iges' EXPORTED IN GRID DIR."
+		puts $symsepdd
+		
+	}
+	
+	global FLATBACK_export WAVY_FLATBACK_export
+	
+	if { ! [string compare $FLATBACK_export YES] } {
+		
+		set exportDir [file join $scriptDir grids/models]
+		file mkdir $exportDir
+		append fltbackname [lindex [split $airfoil_input .] 0] "_" flatback
+		
+		set fltex [pw::Application begin DatabaseExport $airfoil_mdl]
+		$fltex initialize -strict -type IGES "$exportDir/$fltbackname.iges"
+		$fltex setAttribute PointwiseCompatibilityMode false
+		$fltex setAttribute FileUnits Meters
+		$fltex verify
+		$fltex write
+		$fltex end
+		
+		puts "FLATBACK MODEL: '$fltbackname.iges' EXPORTED IN GRID DIR."
+		puts $symsepdd
+		
+	}
+	
+	if { ! [string compare $WAVY_FLATBACK_export YES] } {
+		
+		WavyCAD_export
+	}
+	
 }

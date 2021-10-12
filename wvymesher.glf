@@ -84,7 +84,7 @@ proc WAVYMESHER {} {
 	global res_lev ypg dsg grg chord_sg
 	global scriptDir fexmod waveDir blkexam blkexamv
 	global defParas meshparacol wave_sg span 
-	global symsepdd ZZ_Abot ZZ_Atop
+	global symsepdd
 	
 	upvar 1 WAVE_PERCENT wv_prct
 	upvar 1 WAVE_GEN_METHOD wv_mtd
@@ -92,6 +92,9 @@ proc WAVYMESHER {} {
 	upvar 1 WAVE_DEPTH wv_dpth
 	upvar 1 ENDSU endsu
 	upvar 1 ENDSL endsl
+	
+	upvar 1 WAVE_Rotational_Angle_Top ZZ_Atop
+	upvar 1 WAVE_Rotational_Angle_Bottom ZZ_Abot
 	
 	set symsep [string repeat = 105]
 	set symsepd [string repeat . 105]
@@ -156,7 +159,7 @@ proc WAVYMESHER {} {
 
 	WaveRead
 	
-	puts "WAVE TYPE: $wv_typ | METHOD: $wv_mtd | DEPTH (%): $wv_dpth | WAVY PERCENT (%): $wv_prct "
+	puts "WAVE TYPE: $wv_typ | METHOD: $wv_mtd | DEPTH(%): $wv_dpth | WAVY PERCENT(%): $wv_prct "
 	puts $symsep
 	
 	set blkexam [pw::Examine create BlockVolume]
