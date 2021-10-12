@@ -22,7 +22,7 @@ set GRD_TYP                       STR;# STR (for STRUCTURED)
 #====================================================
 #indicate if you need to generate flatback profile based on your input airfoil coordinates
 
-set FLATBACK_GEN                  YES;# (YES/NO)
+set FLATBACK_GEN                   NO;# (YES/NO)
 
 set FLATBACK_GEN_METHOD       default;# (default/DU97function) method to distribute thickness
 
@@ -103,7 +103,7 @@ set cae_solver                   CGNS;# (Exp. SU2 or CGNS)
 set POLY_DEG                       Q1;# (Q1:Linear - Q4:quartic) | FOR SU2 ONLY Q1
 
 #ENABLES CAE EXPORT 
-set cae_export                     NO;# (YES/NO)
+set cae_export                    YES;# (YES/NO)
 
 #SAVES NATIVE FORMATS 
 set save_native                    NO;# (YES/NO)
