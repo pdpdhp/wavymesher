@@ -131,16 +131,16 @@ proc WAVYMESHER {} {
 
 	#----------------------------------------------------------------------------
 	#INCOMPATIBLE WAVY SPECIFICATIONS
-	if { [string compare $wv_mtd spline]!=0 && [string compare $wv_typ W1]==0 } {
-		puts "ONLY SPLINE WAVE METHOD IS NOT COMPATIBLE WITH:"
+	if { [string compare $wv_mtd spline] && ! [string compare $wv_typ W1] } {
+		puts "ONLY SPLINE WAVE METHOD IS COMPATIBLE WITH:"
 		puts "$wv_typ (i.e. SINE WAVE) WITH $wv_dpth% WAVE DEPTH."
 		puts $symsep
 		exit -1
 	}
 	
-	if { [string compare $wv_mtd spline]!=0 && ($ZZ_Abot!=0 || $ZZ_Atop!=0) } {
+	if { [string compare $wv_mtd spline] && ($ZZ_Abot!=0 || $ZZ_Atop!=0) } {
 		puts "ONLY SPLINE WAVE METHOD IS COMPATIBLE WITH ROTATING WAVINESS."
-		puts "info: wave's rotational angles will be ignord."
+		puts "info: wave's rotational angles is ignord."
 		puts $symsep
 		set ZZ_Abot 0
 		set ZZ_Atop 0

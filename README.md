@@ -13,7 +13,7 @@ pointwise -b wvymesher.glf ?MeshParameters.glf? airfoil_coordinates.txt <airfoil
 
 GUI
 ---
-![GUI](https://github.com/pdpdhp/wavymesher/blob/main/wavymesherGUI.png)
+![GUI](https://github.com/pdpdhp/wavymesher/blob/main/imgs/wavymesherGUI.png)
 
 Input Airfoil Coordinates:
 --------------------------
@@ -96,6 +96,29 @@ set WAVE_Rotational_Angle_Top       0;# (deg) lets wave rotates counter clockwis
 set WAVE_Rotational_Angle_Bottom    0;# (deg) lets wave rotates clockwise at lower edge
 ```
 
+CAE and Model Export:
+
+You may use below options in the input file to have flatback, wavy flatback and your mesh exported.
+
+```shell
+#MODEL EXPORT:
+#===================================================
+#TO EXPORT FLATBACK MODEL'S CAD FILE
+set FLATBACK_export               YES;# (YES/NO)
+
+#TOP EXPORT WAVY FLATBACK MODEL'S CAD FILE
+set WAVY_FLATBACK_export          YES;# (YES/NO)
+
+#CAE EXPORT:
+#===================================================
+#CAE SOLVER SELECTION. 
+set cae_solver                   CGNS;# (Exp. SU2 or CGNS)
+
+#ENABLE CAE EXPORT 
+set cae_export                    YES;# (YES/NO)
+```
+
+
 Mesh Specificity:
 -----------------
 Meshing specifications can be defined at the bottom part of the mesh parameters input file. They represent lists so series of meshes with different resolution can be defined and be generated. At the top of the mesh parameter file, grid refinement level is inidcated as 'res_lev' and it indicates index of mesh specification parameter in each list. The last element in the list represents the coarsest level. WV\_NOD meshing parameter indicates number of mesh nodes per wave.
@@ -123,10 +146,10 @@ set TE_SRT                           {0.00048,0.0012025,0.001925,0.0047625,0.007
 set TE_PT                                                        {160,80,40,20,10}
 
 # EXPLICIT EXTRUSION FACTORS ACCORDING TO GRID GUIDELINE
-set EXP_FAC                                                  {0.9,0.9,0.9,0.9,0.9}
+set EXP_FAC                                             {0.45,0.45,0.45,0.45,0.45}
 
 # IMPLICIT EXTRUSION FACTORS ACCORDING TO GRID GUIDELINE
-set IMP_FAC                                                  {100,100,100,100,100}
+set IMP_FAC                                             {20.0,20.0,20.0,20.0,20.0}
 
 # NORMAL EXTRUSION VOLUME RATIO ACCORDING TO GRID GUIDELINE
 set VOL_FAC                                              {0.45,0.45,0.45,0.45,0.5}

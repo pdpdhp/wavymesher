@@ -60,6 +60,17 @@ proc MGuideLine {ref_lev guidedir} {
 
 }
 
+proc InterSect { top bot } {
+
+	foreach t $top b $bot {
+		if { [expr ($b-$t)]<0 } {
+			puts "WAVE IS INTERSECTING. PLEASE UPDATE YOUR WAVE'S INPUT PARAMETERS."
+			exit -1
+		}
+	}
+
+}
+
 proc WaveRead { } {
 	
 	global waveDir w1_x w1_y w1_z w2_x w2_y w2_z
@@ -100,4 +111,5 @@ proc WaveRead { } {
 		lappend w2_z [lindex $wave2_spec($j) 2]
 	}
 	
+	InterSect $w1_z $w2_z
 }

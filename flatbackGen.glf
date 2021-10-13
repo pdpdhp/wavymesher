@@ -27,7 +27,7 @@ proc .. {a {b ""} {step 1}} {
 proc sgn x {expr {($x>0) - ($x<0)}}
 
 # wavy/flatback thickness distributor based on du97 function 
-proc Flbk_SrfDUTHDis { xu xl Ucrv Lcrv {Wave NO} {wdepth 50}} {
+proc Flbk_SrfDUTHDis { xarcs Ucrv Lcrv {Wave NO} {wdepth 50}} {
 	
 	global ref_u ref_l endtk_u endtk_l chordln xuref xlref end_tu end_tl eps pi
 	
@@ -41,13 +41,13 @@ proc Flbk_SrfDUTHDis { xu xl Ucrv Lcrv {Wave NO} {wdepth 50}} {
 	}
 	
 
-	foreach x $xu {
+	foreach ac $xarcs {
 
-		lappend u_tk [$Ucrv getXYZ -X $x]
-	
-		if {$x>$xuref} {
+		lappend u_tk [$Ucrv getXYZ -arc $ac]
+		set xutk [lindex [lindex $u_tk end] 0]
+		
+		if {$xutk>$xuref} {
 			
-			set xutk [lindex [lindex $u_tk end] 0]
 			set dutk [expr ($ref_u - abs([lindex [lindex $u_tk end] 1]))]
 			set sign 1
 			set tg_s 1
@@ -59,11 +59,11 @@ proc Flbk_SrfDUTHDis { xu xl Ucrv Lcrv {Wave NO} {wdepth 50}} {
 			if { [string compare $Wave YES]==0 } {
 				
 				set sign -1
-				set up_thk_dis [expr ((($x-$xuref)/($chordln-$xuref))**1.02)*$up_thk_dis]
+				set up_thk_dis [expr ((($xutk-$xuref)/($chordln-$xuref))**1.02)*$up_thk_dis]
 				
 				if {teq(0, $up_thk_dis)} { set up_thk_dis $eps }
 				
-				set xvar [expr (($x-$xlref)/($chordln-$xlref))]
+				set xvar [expr (($xutk-$xlref)/($chordln-$xlref))]
 				
 				set tg_s [expr ((1+cos($pi-$xvar*$pi*0.5))**2*\
 					([lindex [lindex $u_tk end] 1] - $end_tu))/$up_thk_dis]
@@ -86,13 +86,13 @@ proc Flbk_SrfDUTHDis { xu xl Ucrv Lcrv {Wave NO} {wdepth 50}} {
 	
 	lappend rescue_d 0
 	
-	foreach x $xl {
+	foreach ac $xarcs {
 	
-		lappend l_tk [$Lcrv getXYZ -X $x]
-
-		if {$x>$xlref} {
+		lappend l_tk [$Lcrv getXYZ -arc $ac]
+		set xltk [lindex [lindex $l_tk end] 0]
+		
+		if {$xltk>$xlref} {
 			
-			set xltk [lindex [lindex $l_tk end] 0]
 			set dltk [expr (abs($ref_l) - abs([lindex [lindex $l_tk end] 1]))]
 			set sign 1
 			set tg_s 1
@@ -109,14 +109,14 @@ proc Flbk_SrfDUTHDis { xu xl Ucrv Lcrv {Wave NO} {wdepth 50}} {
 					set dltk [expr $max_value + $max_diff/3]
 				}
 				
-				set dltk [expr ((($x-$xlref)/($chordln-$xlref))**1.03)*$dltk]
+				set dltk [expr ((($xltk-$xlref)/($chordln-$xlref))**1.03)*$dltk]
 				
 				set low_thk_dis [lower_flatback_thickness_dis $xltk $dltk $flatback_percent \
 											$endtk_l $te_tk]
 				
 				if {teq(0, $low_thk_dis)} { set low_thk_dis $eps }
 				
-				set xvar [expr (($x-$xlref)/($chordln-$xlref))]
+				set xvar [expr (($xltk-$xlref)/($chordln-$xlref))]
 				
 				set tg_s [expr ((1+cos($pi-$xvar*$pi*0.5))**1.5*\
 						([lindex [lindex $l_tk end] 1] - $end_tl))/($low_thk_dis)]
@@ -145,17 +145,18 @@ proc Flbk_SrfDUTHDis { xu xl Ucrv Lcrv {Wave NO} {wdepth 50}} {
 }
 
 # wavy/flatback thickness distributor based on linear scaling of thickness differences (default)
-proc Flbk_SrfDefault { xu xl Ucrv Lcrv uSc lSc {Wave NO}} {
+proc Flbk_SrfDefault { xarcs Ucrv Lcrv uSc lSc {Wave NO}} {
 
 	global ref_u ref_l xuref xlref chordln eps end_tu end_tl pi
 	
-	foreach x $xu {
+	foreach ac $xarcs {
 	
-		lappend u_tk [$Ucrv getXYZ -X $x]
+		lappend u_tk [$Ucrv getXYZ -arc $ac]
 		
-		if {$x>=$xuref} {
+		set xutk [lindex [lindex $u_tk end] 0]
+		
+		if {$xutk>=$xuref} {
 
-			set xutk [lindex [lindex $u_tk end] 0]
 			set dutk [expr (abs($ref_u) - abs([lindex [lindex $u_tk end] 1]))]
 			set sign 1
 			set tg_s 1
@@ -165,11 +166,11 @@ proc Flbk_SrfDefault { xu xl Ucrv Lcrv uSc lSc {Wave NO}} {
 			# messy correction when it generates waviness at aft portion | UPPER SURFACE
 			if { [string compare $Wave YES]==0 } {
 				set sign 1
-				set up_thk_dis [expr ((($x-$xuref)/($chordln-$xuref))**1.03)*$up_thk_dis]
+				set up_thk_dis [expr ((($xutk-$xuref)/($chordln-$xuref))**1.03)*$up_thk_dis]
 			
 				if {teq(0, $up_thk_dis)} { set up_thk_dis $eps }
 				
-				set xvar [expr (($x-$xlref)/($chordln-$xlref))]
+				set xvar [expr (($xutk-$xlref)/($chordln-$xlref))]
 				
 				set tg_s [expr ((1+cos($pi-$xvar*$pi*0.5))**1.5*\
 						([lindex [lindex $u_tk end] 1] - $end_tu))/$up_thk_dis]
@@ -190,12 +191,14 @@ proc Flbk_SrfDefault { xu xl Ucrv Lcrv uSc lSc {Wave NO}} {
 	
 	lappend rescue_d 0
 	
-	foreach x $xl {
-	
-		lappend l_tk [$Lcrv getXYZ -X $x]
+	foreach ac $xarcs {
 		
-		if {$x>$xlref} {
-			set xltk [lindex [lindex $l_tk end] 0]
+		lappend l_tk [$Lcrv getXYZ -arc $ac]
+		
+		set xltk [lindex [lindex $l_tk end] 0]
+		
+		if {$xltk>$xlref} {
+
 			set dltk [expr (abs($ref_l) - abs([lindex [lindex $l_tk end] 1]))]
 			set sign 1
 			set tg_s 1
@@ -212,13 +215,13 @@ proc Flbk_SrfDefault { xu xl Ucrv Lcrv uSc lSc {Wave NO}} {
 					set dltk [expr $max_value + $max_diff/3]
 				}
 				
-				set dltk [expr ((($x-$xlref)/($chordln-$xlref))**1.5)*$dltk]
+				set dltk [expr ((($xltk-$xlref)/($chordln-$xlref))**1.5)*$dltk]
 				
 				set low_thk_dis [expr $lSc*abs($dltk)]
 				
 				if {teq(0, $low_thk_dis)} { set low_thk_dis $eps }
 				
-				set xvar [expr (($x-$xlref)/($chordln-$xlref))]
+				set xvar [expr (($xltk-$xlref)/($chordln-$xlref))]
 				
 				set tg_s [expr ((1+cos($pi-$xvar*$pi*0.5))**1.05*\
 						([lindex [lindex $l_tk end] 1] - $end_tl))/($low_thk_dis)]
@@ -280,6 +283,7 @@ proc Flbk_NdDis {Flbk_Tag Ucrv Lcrv FLT_PRC {reDis 50}} {
 		set FLT_PRC_UP [expr (abs($end_u-$end_l)/$chordln)*100]
 	}
 	
+	set xarcs [list {*}$x_arcs 1.0]
 	set xu_locs $xutk
 	set xl_locs $xltk
 		
@@ -292,7 +296,7 @@ proc Flbk_NdDis {Flbk_Tag Ucrv Lcrv FLT_PRC {reDis 50}} {
 	set refs [list $ref_u $ref_l]
 
 	set ends [list $end_u $end_l]
-	return [list $xu_locs $xl_locs $refs $ends]
+	return [list $refs $ends $xarcs]
 }
 
 
@@ -338,7 +342,7 @@ proc surface_curve { surfaces } {
 	foreach srf $surfaces {
 
 		set Spsegment [pw::SegmentSpline create]
-		$Spsegment setSlope Free
+		$Spsegment setSlope Akima
 	
 		foreach node $srf {
 			$Spsegment addPoint [list [lindex $node 0] [lindex $node 1] [lindex $node 2]]
@@ -348,7 +352,7 @@ proc surface_curve { surfaces } {
 		[lindex $Spcurve end] addSegment $Spsegment
 	
 	}
-
+	
 	return $Spcurve
 }
 
@@ -378,14 +382,14 @@ proc flt_specs { flt_Dsc flt_prc Ucrv Lcrv {wdpth 50}} {
 	set min_te [expr $wdpth*0.01*$max_te]
 	
 	#target TE end location
-	set end_tu [expr [lindex [lindex $flt_Dsc 3] 0] - $min_te]
-	set end_tl [expr [lindex [lindex $flt_Dsc 3] 1] + $min_te]
+	set end_tu [expr [lindex [lindex $flt_Dsc 1] 0] - $min_te]
+	set end_tl [expr [lindex [lindex $flt_Dsc 1] 1] + $min_te]
 	
 	#scale factors for thickness distributions of DU97 thickness distribution function
 	set minw_usc [expr ($max_te-$min_te)/($ref_u - $max_te)]
 	set minw_lsc [expr ($max_te-$min_te)/($max_te - abs($ref_l))]
 	
-	return [list [lindex $flt_Dsc 0] [lindex $flt_Dsc 1] $uscale $lscale $minw_usc $minw_lsc]
+	return [list $uscale $lscale $minw_usc $minw_lsc [lindex $flt_Dsc end]]
 }
 
 proc flatback_magic { Fgen Method Ucrv Lcrv {FLT_PRC 10} {Wavy_Percent 40} {Wavy_depth 50} } {
@@ -393,46 +397,46 @@ proc flatback_magic { Fgen Method Ucrv Lcrv {FLT_PRC 10} {Wavy_Percent 40} {Wavy
 	global FLT_PRC_UP
 	
 	#generating flatback using default thickness distribution
-	if { [string compare $Fgen YES]==0 && [string compare $Method default]==0 } {
+	if { ! [string compare $Fgen YES] && ! [string compare $Method default] } {
 
 		set flt_dis [Flbk_NdDis $Fgen $Ucrv $Lcrv $FLT_PRC]
 
 		set flt [flt_specs $flt_dis $FLT_PRC_UP $Ucrv $Lcrv]
 
-		set fblend_surfaces [Flbk_SrfDefault [lindex $flt 0] [lindex $flt 1] \
-				$Ucrv $Lcrv [expr -1*[lindex $flt 2]] [expr -1*[lindex $flt 3]]]
+		set fblend_surfaces [Flbk_SrfDefault [lindex $flt end] \
+			$Ucrv $Lcrv [expr -1*[lindex $flt 0]] [expr -1*[lindex $flt 1]]]
 	
 	#generating flatback using DU97function thickness distribution
-	} elseif { [string compare $Fgen YES]==0 && [string compare $Method DU97function]==0 } {
+	} elseif { ! [string compare $Fgen YES] && ! [string compare $Method DU97function] } {
 
 		set flt_dis [Flbk_NdDis $Fgen $Ucrv $Lcrv $FLT_PRC]
 
 		set flt [flt_specs $flt_dis $FLT_PRC_UP $Ucrv $Lcrv $Wavy_depth]
 
-		set fblend_surfaces [Flbk_SrfDUTHDis [lindex $flt 0] [lindex $flt 1] $Ucrv $Lcrv]
+		set fblend_surfaces [Flbk_SrfDUTHDis [lindex $flt end] $Ucrv $Lcrv]
 	
 	#generating waviness aft portion using default thickness distribution
-	} elseif { [string compare $Fgen YES]!=0 && [string compare $Method default]==0 } {
+	} elseif { [string compare $Fgen YES] && ! [string compare $Method default] } {
 		
 		set flt_dis [Flbk_NdDis $Fgen $Ucrv $Lcrv $FLT_PRC $Wavy_Percent]
 
 		set flt [flt_specs $flt_dis $FLT_PRC_UP $Ucrv $Lcrv $Wavy_depth]
 
-		set fblend_surfaces [Flbk_SrfDefault [lindex $flt 0] [lindex $flt 1] \
-						$Ucrv $Lcrv [lindex $flt 4] [lindex $flt 5] YES]
+		set fblend_surfaces [Flbk_SrfDefault [lindex $flt end] \
+					$Ucrv $Lcrv [lindex $flt 2] [lindex $flt 3] YES]
 	
 	#generating waviness aft portion using DU97function thickness distribution
-	} elseif { [string compare $Fgen YES]!=0 && [string compare $Method DU97function]==0 } {
+	} elseif { [string compare $Fgen YES] && ! [string compare $Method DU97function] } {
 
 		set flt_dis [Flbk_NdDis $Fgen $Ucrv $Lcrv $FLT_PRC $Wavy_Percent]
 
 		set flt [flt_specs $flt_dis $FLT_PRC_UP $Ucrv $Lcrv $Wavy_depth]
 
-		set fblend_surfaces [Flbk_SrfDUTHDis [lindex $flt 0] [lindex $flt 1] \
-						$Ucrv $Lcrv YES $Wavy_depth]
+		set fblend_surfaces [Flbk_SrfDUTHDis [lindex $flt end] \
+							$Ucrv $Lcrv  YES $Wavy_depth]
 
 	#lets splin have control over thickness distribution of aft waviness portion
-	} elseif { [string compare $Fgen YES]!=0 && [string compare $Method Spline]==0 } {
+	} elseif { [string compare $Fgen YES] && ! [string compare $Method spline] } {
 
 		set fblend_surfaces -1
 

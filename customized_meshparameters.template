@@ -22,7 +22,7 @@ set GRD_TYP                       STR;# STR (for STRUCTURED)
 #====================================================
 #indicate if you need to generate flatback profile based on your input airfoil coordinates
 
-set FLATBACK_GEN                   NO;# (YES/NO)
+set FLATBACK_GEN                  YES;# (YES/NO)
 
 set FLATBACK_GEN_METHOD       default;# (default/DU97function) method to distribute thickness
 
@@ -102,7 +102,7 @@ set cae_solver                   CGNS;# (Exp. SU2 or CGNS)
 #POLYNOMIAL DEGREE FOR HIGH ORDER MESH EXPORT 
 set POLY_DEG                       Q1;# (Q1:Linear - Q4:quartic) | FOR SU2 ONLY Q1
 
-#ENABLES CAE EXPORT 
+#ENABLE CAE EXPORT 
 set cae_export                    YES;# (YES/NO)
 
 #SAVES NATIVE FORMATS 
@@ -130,10 +130,10 @@ set TE_SRT                           {0.00048,0.0012025,0.001925,0.0047625,0.007
 set TE_PT                                                        {160,80,40,20,10}
 
 # EXPLICIT EXTRUSION FACTORS ACCORDING TO GRID GUIDELINE
-set EXP_FAC                                                  {0.1,0.1,0.1,0.1,0.1}
+set EXP_FAC                                             {0.45,0.45,0.45,0.45,0.45}
 
 # IMPLICIT EXTRUSION FACTORS ACCORDING TO GRID GUIDELINE
-set IMP_FAC                                                  {0.2,0.2,0.2,0.2,0.2}
+set IMP_FAC                                             {20.0,20.0,20.0,20.0,20.0}
 
 # NORMAL EXTRUSION VOLUME RATIO ACCORDING TO GRID GUIDELINE
 set VOL_FAC                                              {0.45,0.45,0.45,0.45,0.5}

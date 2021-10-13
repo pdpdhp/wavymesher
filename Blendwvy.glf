@@ -75,6 +75,9 @@ proc blend_wave { mtd dpth prct wave_bcon wave_tcon airfoilfront leftcons domtrs
 
 		[lindex $crvB_con end] setDimension $midDimBot
 		[lindex $crvB_con end] setDistribution 1 [$midDisBot copy]
+		
+		lappend dpth_local [expr 100*(1-(abs([lindex [$wtc getXYZ -arc 1] 2] - \
+						[lindex [$wbt getXYZ -arc 1] 2])/$TE_thk))]
 	}
 	
 	if { [string compare $mtd spline]==0 } {
@@ -154,14 +157,11 @@ proc blend_wave { mtd dpth prct wave_bcon wave_tcon airfoilfront leftcons domtrs
 
 		foreach wbt [lrange $wbcon_sp 0 end-1] wtc [lrange $wtcon_sp 0 end-1] \
 				aft [lrange $aft_sp 0 end-1] afb [lrange $afb_sp 0 end-1] \
-					tcrv $crvT_con bcrv $crvB_con {
+					tcrv $crvT_con bcrv $crvB_con dptl $dpth_local {
 			
-			set dpth_local [expr 100*(1-(abs([lindex [$wtc getXYZ -arc 1] 2] - \
-							[lindex [$wbt getXYZ -arc 1] 2])/$TE_thk))]
-
 			set flt_wvy_srf \
 			[flatback_magic NO $mtd [lindex $FLTB_Crvs0 0] [lindex $FLTB_Crvs0 1] \
-										777 $prct $dpth_local]
+										777 $prct $dptl]
 
 			set flt_wvy_prf [surface_curve $flt_wvy_srf]
 
@@ -173,12 +173,14 @@ proc blend_wave { mtd dpth prct wave_bcon wave_tcon airfoilfront leftcons domtrs
 
 			set yCord [lindex [$aft getXYZ -arc 1] 1]
 
-			RotTrsCrvs [list {*}[lindex $flt_wvyt 1] {*}[lindex $flt_wvyb 1]] $yCord 90
+			RotTrsCrvs [list {*}$flt_wvyt {*}$flt_wvyb] $yCord 90
 
 			pw::Entity project -type ClosestPoint $tcrv [lindex $flt_wvyt 1]
 			pw::Entity project -type ClosestPoint $bcrv [lindex $flt_wvyb 1]
 		}
-
+		
+		RotTrsCrvs $FLTB_Crvs0 0 90
+		
 	} else {
 	
 		puts "PLEASE SELECT RIGHT WAVY GENERATION METHOD!"
@@ -211,6 +213,7 @@ proc blend_wave { mtd dpth prct wave_bcon wave_tcon airfoilfront leftcons domtrs
 	
 	puts "WAVY SURFACE IS BLENDED USING $mtd METHOD OVER $prct% of CHORD WITH [format %.2f $dpth]% WAVE DEPTH!"
 	puts $asep
+	
 	
 	return [list $domwte_top $domwte_bot]
 }
