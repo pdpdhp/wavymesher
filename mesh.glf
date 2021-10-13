@@ -12,7 +12,9 @@ proc Topo_Prep_Mesh {wavyp} {
 	global ypg dsg grg chord_sg ter_sg ler_sg tpts_sg exp_sg imp_sg vol_sg TOTAL_HEIGHT res_lev
 	global model_2D model_Q2D span fixed_snodes span_dimension
 	global N_third rightcon_top rightcon_bot airfoilfront left_hte right_hte leftcons rmesh_trsdoms middoms
-	global blk blkexam cae_solver w1_y GRD_TYP chordln Xzone
+	global blk blkexam cae_solver w1_y GRD_TYP chordln Xzone extr_watchout
+	
+	global HYB_HEIGHT maxstepfac
 	
 	set Xzone [expr $chordln - ($wavyp*$chordln)/100.]
 	
@@ -58,6 +60,18 @@ proc Topo_Prep_Mesh {wavyp} {
 	
 	lappend leftcons $left_hte
 	
+	set HYB_HEIGHT $TOTAL_HEIGHT
+	
+	if { ! [string compare $GRD_TYP HYB] } {
+	
+		set TOTAL_HEIGHT [expr $chordln*0.08]
+		
+		if { $TOTAL_HEIGHT < [expr 0.65*$extr_watchout] } {
+			set TOTAL_HEIGHT [expr 0.65*$extr_watchout]
+		}
+		
+	}
+	
 	set maxstepfac [list 10000 7000 5000 3000 2000]
 	
 	set leftedge [pw::Edge createFromConnectors $leftcons]
@@ -97,8 +111,24 @@ proc Topo_Prep_Mesh {wavyp} {
 	
 	set ref_con [[[lindex $dom_left_spb 0] getEdge 2] getConnector 1]
 	
-	set ref_consp [$ref_con split -I [list \
-			[lindex [$ref_con closestCoordinate [$ref_con getPosition -X 4]] 0]]]
+	set ref_con_length [$ref_con getLength -arc 1]
+	set ref_con_dim [$ref_con getDimension]
+	
+	if { ! [string compare $GRD_TYP STR] } {
+	
+		set ref_consp [$ref_con split -I [list \
+			[lindex [$ref_con closestCoordinate [$ref_con getPosition -arc 0.006]] 0]]]
+	
+	} elseif { ! [string compare $GRD_TYP HYB] } {
+	
+		set ref_consp [$ref_con split -I [list [lindex [$ref_con closestCoordinate \
+					[$ref_con getPosition -grid  [expr int($ref_con_dim-2)]]] 0]]]
+	
+	} else {
+	
+		puts "PLEASE SELECT A VALID OPTION FOR GRID TYPE IN INPUT FILE."
+		exit -1
+	}
 	
 	foreach spdom $dom_left_spb {
 		lappend dom_left_spc [$spdom split -J [[lindex $ref_consp 0] getDimension]]
@@ -119,24 +149,22 @@ proc Topo_Prep_Mesh {wavyp} {
 	lappend alldoms [lindex [lindex $dom_left_spc 1] 1]
 
 	
-	if {[string compare $GRD_TYP STR]==0} {
-		set fstr [pw::FaceStructured createFromDomains $alldoms]
+	set fstr [pw::FaceStructured createFromDomains $alldoms]
 		
 		
-		for {set i 0} {$i<[llength $fstr]} {incr i} {
-			lappend blk [pw::BlockStructured create]
-			[lindex $blk $i] addFace [lindex $fstr $i]
-		}
-
-		set domtrn [pw::Application begin ExtrusionSolver $blk]
-		
-		foreach bl $blk {
-			$bl setExtrusionSolverAttribute Mode Translate
-			$bl setExtrusionSolverAttribute TranslateDirection {0 -1 0}
-			$bl setExtrusionSolverAttribute TranslateDistance $span
-		}
-		
+	for {set i 0} {$i<[llength $fstr]} {incr i} {
+		lappend blk [pw::BlockStructured create]
+		[lindex $blk $i] addFace [lindex $fstr $i]
 	}
+
+	set domtrn [pw::Application begin ExtrusionSolver $blk]
+	
+	foreach bl $blk {
+		$bl setExtrusionSolverAttribute Mode Translate
+		$bl setExtrusionSolverAttribute TranslateDirection {0 -1 0}
+		$bl setExtrusionSolverAttribute TranslateDistance $span
+	}
+	
 	
 	if {[string compare $fixed_snodes NO]==0} {
 		$domtrn run $trnstp
@@ -161,8 +189,18 @@ proc Topo_Prep_Mesh {wavyp} {
 	
 	foreach bl $blk {
 		$blkexam addEntity $bl
+		lappend hyb_doms [[$bl getFace 1] getDomains]
 	}
 
+	foreach doms $hyb_doms {
+		foreach dom $doms {
+			lappend hyb_cons [[$dom getEdge 3] getConnector 1]
+		}
+	}
+	
+	set hyb_path [[[lindex [[[lindex $blk 1] getFace 5] getDomains] end] getEdge 2] getConnector 1]
+	set hyb_spcon [[[lindex [[[lindex $blk 1] getFace 1] getDomains] end] getEdge 4] getConnector 1]
+	
 	set N_third [[[[lindex $airfoilfront 0] getEdge 4] getConnector 1] getDimension]
 	
 	set rmesh_trsdoms [list [lindex [lindex $dom_left_spc 0] 0] \
@@ -170,4 +208,7 @@ proc Topo_Prep_Mesh {wavyp} {
 							[lindex [lindex $dom_left_spd 0] 0]]
 	
 	set middoms [[[lindex $blk 1] getFace 3] getDomains]
+	
+	if { ! [string compare $GRD_TYP HYB] } { HYBRID_Mesh $hyb_cons $hyb_path $hyb_spcon $N_third}
+	
 }

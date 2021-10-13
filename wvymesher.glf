@@ -50,10 +50,13 @@ proc CAD_Read { airfoilp } {
 	pw::Connector setCalculateDimensionMaximum 100000
 	pw::Application setCAESolver $cae_solver 3
 	
-	if {[string compare $GRD_TYP STR]==0} {
+	if { ! [string compare $GRD_TYP STR] } {
 		puts "STRUCTURED MULTIBLOCK GRID IS SELECTED."
 		puts $asep
-	} 
+	} elseif { ! [string compare $GRD_TYP HYB] } {
+		puts "HYBRID GRID IS SELECTED."
+		puts $asep
+	}
 	
 	if { $NprofullFilename != "" } {
 		
@@ -111,7 +114,7 @@ proc WAVYMESHER {} {
 		puts "AIRFOIL COORDINATES: $nprofile does not exist or is not readable"
 		exit -1
 	}
-
+	
 	#----------------------------------------------------------------------------
 	#READING AND UPDATING GRID PARAMETERS AND VARIABLES
 	Config_Prep
@@ -222,7 +225,7 @@ source [file join $scriptDir "dufunction.glf"]
 source [file join $scriptDir "flatbackGen.glf"]
 source [file join $scriptDir "quiltGen.glf"]
 source [file join $scriptDir "Blendwvy.glf"]
-
+source [file join $scriptDir "Hbrdmesh.glf"]
 
 ParamDefualt [file join $scriptDir "defaultMeshParameters.glf"]
 

@@ -20,11 +20,11 @@ Input Airfoil Coordinates:
 Input airfoil coordinates must be in two columns seperated by a comma (,) starting from the trailing edge point of the upper surface to the trailing edge point of the lower surface.
 
 ```shell
-first row of airfoil coordinates: x0, y0 --> Upper TE point
+first row of airfoil coordinates: x0, y0 --> (TE point)
 .
 .
 .
-last row of airfoil coordinates: xn, yn --> Lower TE point
+last row of airfoil coordinates: xn, yn --> (TE point)
 ```
 
 Flatback Model Parameters:
@@ -96,6 +96,28 @@ set WAVE_Rotational_Angle_Top       0;# (deg) lets wave rotates counter clockwis
 set WAVE_Rotational_Angle_Bottom    0;# (deg) lets wave rotates clockwise at lower edge
 ```
 
+Hybrid Mesh:
+------------
+You can also choose HYB to generate hybrid structured and unstructured grid.
+
+```shell
+#GRID SYSTEM'S ARRANGEMENT: STRUCTURED OR UNSTRUCTRED
+#====================================================
+#PLEASE SELECT GRID SYSTEM:
+set GRD_TYP                       HYB;# STR (for STRUCTURED) HYB (for HYBRID)
+
+# UNSTRUCTURED SETTINGS FOR GRD_TYP: HYB
+#====================================================
+#UNSTRUCTURED SOLVER ALGORITHM: 
+set UNS_ALG      AdvancingFrontOrtho;# AdvancingFront | AdvancingFrontOrtho | Delaunay
+
+#UNSTRUCTRED SOLVER CELL TYPE: 
+set UNS_CTYP            TriangleQuad;# TriangleQuad | Triangle
+
+#GENERAL DECAY FACTOR FOR UNSTRUCTRED SOLVER
+set SIZE_DCY                     0.6;# From 0.0 to 1.0 | larger, mesh becomes denser around config
+```
+
 CAE and Model Export:
 ---------------------
 You may use below options in the input file to have flatback, wavy flatback and your mesh exported.
@@ -117,7 +139,6 @@ set cae_solver                   CGNS;# (Exp. SU2 or CGNS)
 #ENABLE CAE EXPORT 
 set cae_export                    YES;# (YES/NO)
 ```
-
 
 Mesh Specificity:
 -----------------

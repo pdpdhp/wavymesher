@@ -60,15 +60,20 @@ proc MGuideLine {ref_lev guidedir} {
 
 }
 
-proc InterSect { top bot } {
-
+proc InterSect { bot top } {
+	
+	global extr_watchout
+	
 	foreach t $top b $bot {
-		if { [expr ($b-$t)]<0 } {
+		if { [expr ($t-$b)]<0 } {
 			puts "WAVE IS INTERSECTING. PLEASE UPDATE YOUR WAVE'S INPUT PARAMETERS."
 			exit -1
 		}
 	}
-
+	
+	set max_top [tcl::mathfunc::max {*}$top]
+	set min_bot [tcl::mathfunc::min {*}$bot]
+	set extr_watchout [expr abs($max_top - $min_bot)]
 }
 
 proc WaveRead { } {

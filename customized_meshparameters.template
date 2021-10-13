@@ -16,7 +16,7 @@ set res_lev                         4;# From  0 (finest) to (coarsest) | last el
 #GRID SYSTEM'S ARRANGEMENT: STRUCTURED OR UNSTRUCTRED
 #====================================================
 #PLEASE SELECT GRID SYSTEM:
-set GRD_TYP                       STR;# STR (for STRUCTURED)
+set GRD_TYP                       HYB;# STR (for STRUCTURED) HYB (for HYBRID)
 
 #FLATBACK PROFILE GENERATION BASED ON INPUT AIRFOIL
 #====================================================
@@ -69,10 +69,20 @@ set WAVE_Rotational_Angle_Top       0;# (deg) lets wave rotates counter clockwis
 #bottom wave rotational angle | BOTTOM 
 set WAVE_Rotational_Angle_Bottom    0;# (deg) lets wave rotates clockwise at lower edge
 
-#STRUCTURED SETTINGS:
 #====================================================
 # approximate total diameter of o-type grid 
 set TOTAL_HEIGHT                  600;# 
+
+# UNSTRUCTURED SETTINGS FOR GRD_TYP: HYB
+#====================================================
+#UNSTRUCTURED SOLVER ALGORITHM: 
+set UNS_ALG      AdvancingFrontOrtho;# AdvancingFront | AdvancingFrontOrtho | Delaunay
+
+#UNSTRUCTRED SOLVER CELL TYPE: 
+set UNS_CTYP            TriangleQuad;# TriangleQuad | Triangle
+
+#GENERAL DECAY FACTOR FOR UNSTRUCTRED SOLVER
+set SIZE_DCY                     0.6;# From 0.0 to 1.0 | larger, mesh becomes denser around config
 
 #GRID DIMENSION:
 #====================================================
