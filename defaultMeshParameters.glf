@@ -16,13 +16,13 @@ set res_lev                         4;# From  0 (finest) to (coarsest) | last el
 #GRID SYSTEM'S ARRANGEMENT: STRUCTURED OR UNSTRUCTRED
 #====================================================
 #PLEASE SELECT GRID SYSTEM:
-set GRD_TYP                       HYB;# STR (for STRUCTURED) HYB (for HYBRID)
+set GRD_TYP                       STR;# STR (for STRUCTURED) HYB (for HYBRID)
 
 #FLATBACK PROFILE GENERATION BASED ON INPUT AIRFOIL
 #====================================================
 #indicate if you need to generate flatback profile based on your input airfoil coordinates
 
-set FLATBACK_GEN                  YES;# (YES/NO)
+set FLATBACK_GEN                   NO;# (YES/NO)
 
 set FLATBACK_GEN_METHOD       default;# (default/DU97function) method to distribute thickness
 
@@ -116,7 +116,7 @@ set POLY_DEG                       Q1;# (Q1:Linear - Q4:quartic) | FOR SU2 ONLY 
 set cae_export                    YES;# (YES/NO)
 
 #SAVES NATIVE FORMATS 
-set save_native                    NO;# (YES/NO)
+set save_native                   YES;# (YES/NO)
 
 #---------------------GRID GUIDELINE SPECIFICATIONS--------------------------------
 #EACH CORRESPONDING ELEMENT REPRESENT A GRID LEVEL INDICATED AT TOP

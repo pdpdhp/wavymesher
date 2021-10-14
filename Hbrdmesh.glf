@@ -137,17 +137,38 @@ proc HYBRID_Mesh { cons path spacecon steps} {
 	foreach dom $dom_uns {
 		$dom setSizeFieldDecay $glob_decay
 			foreach edge [$dom getEdges] {
-				for {set i 1} {$i <= [$edge getConnectorCount]} {incr i} {
+				for {set i 1} {$i <= 4} {incr i} {
+					lappend unstrbcs_trx [list $dom [$edge getConnector $i] \
+								[$edge getConnectorOrientation $i]]
+				}
+				
+				for {set i 5} {$i <= 7} {incr i} {
 					lappend unstrbcs [list $dom [$edge getConnector $i] \
 								[$edge getConnectorOrientation $i]]
 				}
 			}
 	}
-
+	
+	set unstrbcondition [pw::TRexCondition create]
+	$unstrbcondition setName trx
+	$unstrbcondition apply $unstrbcs_trx
+	$unstrbcondition setConditionType Wall
+	$unstrbcondition setValue $avg_spc
+	
 	set unstrbcondition [pw::TRexCondition create]
 	$unstrbcondition setName adapts
 	$unstrbcondition apply $unstrbcs
 	$unstrbcondition setAdaptation On
+	
+	$dom_uns setUnstructuredSolverAttribute TRexFullLayers 2
+	$dom_uns setUnstructuredSolverAttribute TRexMaximumLayers 3
+	$dom_uns setUnstructuredSolverAttribute TRexGrowthRate $grg
+	$dom_uns setUnstructuredSolverAttribute TRexPushAttributes True
+	$dom_uns setUnstructuredSolverAttribute TRexCellType $uns_celltype
+	$dom_uns setUnstructuredSolverAttribute TRexIsotropicHeight 0.8
+	$dom_uns setUnstructuredSolverAttribute TRexSpacingSmoothing 50
+	$dom_uns setUnstructuredSolverAttribute TRexSpacingRelaxationFactor 0.9
+	
 	
 	set UnsCol [pw::Collection create]
 	$UnsCol set $dom_uns
