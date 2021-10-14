@@ -176,3 +176,5 @@ set IMP_FAC                                             {20.0,20.0,20.0,20.0,20.
 set VOL_FAC                                              {0.45,0.45,0.45,0.45,0.5}
 ```
 
+![GUI](https://github.com/pdpdhp/wavymesher/blob/main/imgs/example.png)
+
