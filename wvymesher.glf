@@ -70,7 +70,7 @@ proc CAD_Read { airfoilp } {
 		
 		set chordln [expr [tcl::mathfunc::max {*}$nxnodes]/1000]
 		
-		puts "AIRFOIL COORDINATES ARE IMPORTED."
+		puts "AIRFOIL COORDINATES ARE IMPORTED: $nprofile"
 		puts $asep
 		
 	} else {
@@ -232,6 +232,7 @@ ParamDefualt [file join $scriptDir "defaultMeshParameters.glf"]
 set MeshParameters ""
 set nprofile ""
 set NprofullFilename ""
+set MparafullFilename ""
 
 if [pw::Application isInteractive] {
 
@@ -241,10 +242,15 @@ if [pw::Application isInteractive] {
 	
 	proc meshparametersgui { } {
 
-		global wkrdir MeshParameters
-
+		global wkrdir MeshParameters MparafullFilename
 		cd $wkrdir
-		if { $MeshParameters == "" } {
+
+		if { $MeshParameters != "" } {
+		
+			file exists $MparafullFilename
+			puts "Input parameters: $MeshParameters"
+
+		} else {
 
 			set types {
  				{{GLYPH Files}  {.glf}}
@@ -264,8 +270,8 @@ if [pw::Application isInteractive] {
 
 		if { $NprofullFilename != "" } {
 
-			validateFile $NprofullFilename exists
-			puts "Input airfoil coordinates: $NprofullFilename"
+			file exists $NprofullFilename
+			puts "Input airfoil coordinates: $nprofile"
 
 		} else {
 
