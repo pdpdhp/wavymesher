@@ -16,7 +16,7 @@ set res_lev                         4;# From  0 (finest) to (coarsest) | last el
 #GRID SYSTEM'S ARRANGEMENT: STRUCTURED OR UNSTRUCTRED
 #====================================================
 #PLEASE SELECT GRID SYSTEM:
-set GRD_TYP                       HYB;# STR (for STRUCTURED) HYB (for HYBRID)
+set GRD_TYP                       STR;# STR (for STRUCTURED) HYB (for HYBRID)
 
 #FLATBACK PROFILE GENERATION BASED ON INPUT AIRFOIL
 #====================================================
@@ -47,7 +47,7 @@ set WAVE_PERCENT                   10;# (%) percent of chord length on which wav
 set AMPLITUDE                  0.0125;# ampl. of wave for only for W1 and W3 types
 
 #Number of Waves 
-set NUM_WAVE                        4;# W2 needs even number | W3 needs two numbers (i.e. 4,1) --> cos and sin
+set NUM_WAVE                        6;# W2 needs even number | W3 needs two numbers (i.e. 4,1) --> cos and sin
 
 #WAVY PARAMETERS ONLY FOR SPLINE METHOD 
 #----------------------------------------------------
@@ -116,7 +116,7 @@ set POLY_DEG                       Q1;# (Q1:Linear - Q4:quartic) | FOR SU2 ONLY 
 set cae_export                    YES;# (YES/NO)
 
 #SAVES NATIVE FORMATS 
-set save_native                    NO;# (YES/NO)
+set save_native                   YES;# (YES/NO)
 
 #---------------------GRID GUIDELINE SPECIFICATIONS--------------------------------
 #EACH CORRESPONDING ELEMENT REPRESENT A GRID LEVEL INDICATED AT TOP

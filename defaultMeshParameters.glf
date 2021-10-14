@@ -16,13 +16,13 @@ set res_lev                         4;# From  0 (finest) to (coarsest) | last el
 #GRID SYSTEM'S ARRANGEMENT: STRUCTURED OR UNSTRUCTRED
 #====================================================
 #PLEASE SELECT GRID SYSTEM:
-set GRD_TYP                       STR;# STR (for STRUCTURED) HYB (for HYBRID)
+set GRD_TYP                       HYB;# STR (for STRUCTURED) HYB (for HYBRID)
 
 #FLATBACK PROFILE GENERATION BASED ON INPUT AIRFOIL
 #====================================================
 #indicate if you need to generate flatback profile based on your input airfoil coordinates
 
-set FLATBACK_GEN                   NO;# (YES/NO)
+set FLATBACK_GEN                  YES;# (YES/NO)
 
 set FLATBACK_GEN_METHOD       default;# (default/DU97function) method to distribute thickness
 
@@ -47,7 +47,7 @@ set WAVE_PERCENT                   10;# (%) percent of chord length on which wav
 set AMPLITUDE                  0.0125;# ampl. of wave for only for W1 and W3 types
 
 #Number of Waves 
-set NUM_WAVE                        4;# W2 needs even number | W3 needs two numbers (i.e. 4,1) --> cos and sin
+set NUM_WAVE                        6;# W2 needs even number | W3 needs two numbers (i.e. 4,1) --> cos and sin
 
 #WAVY PARAMETERS ONLY FOR SPLINE METHOD 
 #----------------------------------------------------
