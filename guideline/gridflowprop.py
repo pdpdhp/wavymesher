@@ -192,6 +192,6 @@ f = open(f'{dirname}/flow_propertise_si.txt', 'w')
 f.write("%10s %14s %12s %12s %20s %10s \n" % ("Reynolds","Ref_chord(m)","Pressure(Pa)","Temp(K)","Density(Kg/m3)","Mach"))
 
 f.write("%1.5e  %1.5e %1.7e  %1.7e %1.15e  %1.5e\r\n" % (flow_spec_si[0],flow_spec_si[1],\
-								flow_spec_si[2],flow_spec_si[3],flow_spec_si[4],flow_spec_si[5]))
-f.close()
+				flow_spec_si[2],flow_spec_si[3],flow_spec_si[4],flow_spec_si[5]))
 
+f.close()

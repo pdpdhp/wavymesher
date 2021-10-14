@@ -26,7 +26,7 @@ NO = 0
 #
 #----------------------------Wave Specifications--------------------
 #Wave Type
-WAVE_TYPE = [W2]
+WAVE_TYPE = [W1]
 #
 #
 #Wave Depth
@@ -42,7 +42,7 @@ AMPLITUDE = [0.0125]
 #
 #
 #Number of waves in lateral direction
-NUM_WAVE = [4]
+NUM_WAVE = [0]
 #
 #
 #Number of points per wave in lateral direction

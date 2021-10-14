@@ -11,17 +11,18 @@ package require PWI_Glyph 3.18.3
 
 proc Config_Prep { } {
 
-	global guidelineDir MeshParameters defParas meshparacol res_lev WAVE_TYPE NUM_WAVE
-
+	global defset guidelineDir MeshParameters res_lev WAVE_TYPE NUM_WAVE
+	
 	if { $MeshParameters != "" } {
 		puts "GRID VARIABLES ARE SET BY $MeshParameters"
-		ParamDefualt $MeshParameters
+		set defset [ParamDefualt $MeshParameters]
 	} else {
 		puts "DEFAULT GRID VARIABLES ARE SET BY defaultMeshParameters.glf"
 	}
 	
 	#updating gridflow.py with new sets of variables
-	GridFlowprop_Update [lrange $defParas end-8 end] [lrange $meshparacol end-8 end] $guidelineDir
+	GridFlowprop_Update [lrange [lindex $defset 0] end-8 end] \
+					[lrange [lindex $defset 1] end-8 end] $guidelineDir
 	
 	MGuideLine $res_lev $guidelineDir
 	
@@ -86,8 +87,8 @@ proc WAVYMESHER {} {
 	global MeshParameters nprofile NprofullFilename
 	global res_lev ypg dsg grg chord_sg
 	global scriptDir fexmod waveDir blkexam blkexamv
-	global defParas meshparacol wave_sg span 
-	global symsepdd
+	global wave_sg span 
+	global symsepdd defset
 	
 	upvar 1 WAVE_PERCENT wv_prct
 	upvar 1 WAVE_GEN_METHOD wv_mtd
@@ -122,7 +123,10 @@ proc WAVYMESHER {} {
 	puts $symsepdd
 	puts "GRID GUIDELINE: Level: $res_lev | Y+: $ypg | Delta_S(m): $dsg | GR: $grg | Chordwise_Spacing(m): $chord_sg"
 	puts $symsep
-
+	
+	set meshparacol [lindex $defset 1]
+	set defParas [lindex $defset 0]
+	
 	set time_start [pwu::Time now]
 
 	#----------------------------------------------------------------------------
@@ -153,7 +157,6 @@ proc WAVYMESHER {} {
 	#READING WAVE AT TRAILING EDGE
 	set wavelist [list {*}[lrange $meshparacol 6 10] $wave_sg $span \
 						$ZZ_Atop $ZZ_Abot $endsu $endsl]
-
 	set wavelab [list {*}[lrange $defParas 6 10] WV_NOD span ZZ_Atop ZZ_Abot ENDSU ENDSL]
 	set wscales [lrange $meshparacol 11 12]
 	set woutdegs [lrange $meshparacol 13 14]
@@ -227,7 +230,7 @@ source [file join $scriptDir "quiltGen.glf"]
 source [file join $scriptDir "Blendwvy.glf"]
 source [file join $scriptDir "Hbrdmesh.glf"]
 
-ParamDefualt [file join $scriptDir "defaultMeshParameters.glf"]
+set defset [ParamDefualt [file join $scriptDir "defaultMeshParameters.glf"]]
 
 set MeshParameters ""
 set nprofile ""

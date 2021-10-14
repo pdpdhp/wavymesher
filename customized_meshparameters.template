@@ -35,7 +35,7 @@ set FLATBACK_PERCENT               10;# (%) percent of chord length
 set WAVE_GEN_METHOD           default;# (default/DU97function/spline) method to distribute thickness on waves
 
 #types of wavyness
-set WAVE_TYPE                      W2;# W1: sine function | W2: cosine function (uses wave depth)| W3: cos.sin
+set WAVE_TYPE                      W1;# W1: sine function | W2: cosine function (uses wave depth)| W3: cos.sin
 
 #Percent of min/max thickness
 set WAVE_DEPTH                     50;# ratio of min to max thickness at wavy TE
@@ -47,7 +47,7 @@ set WAVE_PERCENT                   10;# (%) percent of chord length on which wav
 set AMPLITUDE                  0.0125;# ampl. of wave for only for W1 and W3 types
 
 #Number of Waves 
-set NUM_WAVE                        6;# W2 needs even number | W3 needs two numbers (i.e. 4,1) --> cos and sin
+set NUM_WAVE                        0;# W2 needs even number | W3 needs two numbers (i.e. 4,1) --> cos and sin
 
 #WAVY PARAMETERS ONLY FOR SPLINE METHOD 
 #----------------------------------------------------
