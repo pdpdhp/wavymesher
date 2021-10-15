@@ -21,8 +21,8 @@ proc Config_Prep { } {
 	}
 	
 	#updating gridflow.py with new sets of variables
-	GridFlowprop_Update [lrange [lindex $defset 0] end-8 end] \
-					[lrange [lindex $defset 1] end-8 end] $guidelineDir
+	GridFlowprop_Update [lrange [lindex $defset 0] end-10 end] \
+					[lrange [lindex $defset 1] end-10 end] $guidelineDir
 	
 	MGuideLine $res_lev $guidelineDir
 	

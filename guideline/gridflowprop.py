@@ -17,6 +17,14 @@ dirname = os.path.dirname(os.path.realpath(__file__))
 Path(f"{dirname}").mkdir(parents=True, exist_ok=True)
 
 #----------------------------GRID GUIDELINE--------------------
+#reynoldsnumbers
+REYNOLDS_NUM = [10.0E6,10.0E6,10.0E6,10.0E6,10.0E6]
+#
+#
+#machnumber
+MACH = [0.15,0.15,0.15,0.15,0.15]
+#
+#
 #TARGET Y PLUS FOR RANS AND HYBRID RANS/LES
 TARG_YPR = [0.04488,0.08977,1.0,3.591,10.181]
 #
@@ -59,27 +67,33 @@ NUM_LEVR = len(TARG_YPR)
 #Flow Properties
 #-----------------TEMPERATURE--------------
 #(K)
-T=288.15
+TEMP = 288.15
+#
+T= np.zeros(NUM_LEVR) + TEMP
 #(R)
 T_R = 489.78
 
 #-----------------MACH NUMBER--------------
-M=0.15
-
+M = np.array(MACH)
+#
 #------------------Reynolds----------------
-Re = 10000000
-
+Re = np.array(REYNOLDS_NUM)
+#
 #-----------------PRESSURE-----------------
 #(Pa)
-P=101325.0
+PRESSURE = 101325.0
+#
+P = np.zeros(NUM_LEVR) + PRESSURE
 #(psi)
 P_psi=14.6959488
 
 #-----------MEAN AERODYNAMIC CHORD--------
 #(M)
-D=1.0
+Ref_Length= 1.0
 #(INCH)
 D_inch=1.0
+#
+D = np.zeros(NUM_LEVR) + Ref_Length
 
 #---------------GAS CONSTANT---------------
 R=8314.4621
@@ -158,7 +172,6 @@ leratio= teratio/2
 
 te1_points=np.array(TE_PT)
 
-
 Exp=np.array(EXP_FAC)
 Imp=np.array(IMP_FAC)
 Vol=np.array(VOL_FAC)
@@ -175,7 +188,7 @@ grid_spec=np.column_stack((ypr,dssr,gr,chord_csize[0:NUM_LEVR],wspc[0:NUM_LEVR],
 #------------------FLOW PROPERTISE--------------
 #FLOW PROPERTISE BASED ON SUTHERLAND | SI
 
-flow_spec_si=np.array([Res,D,P,T,ros,M])
+flow_spec_si=np.column_stack((Res[0:NUM_LEVR],D[0:NUM_LEVR],P[0:NUM_LEVR],T[0:NUM_LEVR],ros[0:NUM_LEVR],M[0:NUM_LEVR]))
 
 #------------writing files---------------------
 # grid propertise metric
@@ -191,7 +204,8 @@ f.close()
 f = open(f'{dirname}/flow_propertise_si.txt', 'w')
 f.write("%10s %14s %12s %12s %20s %10s \n" % ("Reynolds","Ref_chord(m)","Pressure(Pa)","Temp(K)","Density(Kg/m3)","Mach"))
 
-f.write("%1.5e  %1.5e %1.7e  %1.7e %1.15e  %1.5e\r\n" % (flow_spec_si[0],flow_spec_si[1],\
-				flow_spec_si[2],flow_spec_si[3],flow_spec_si[4],flow_spec_si[5]))
+for i in range(NUM_LEVR):
+    f.write("%1.5e  %1.5e %1.7e  %1.7e %1.15e  %1.5e\r\n" % (flow_spec_si[i,0],flow_spec_si[i,1],\
+				flow_spec_si[i,2],flow_spec_si[i,3],flow_spec_si[i,4],flow_spec_si[i,5]))
 
 f.close()

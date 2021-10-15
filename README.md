@@ -148,32 +148,40 @@ Meshing specifications can be defined at the bottom part of the mesh parameters 
 #---------------------GRID GUIDELINE SPECIFICATIONS--------------------------------
 #EACH CORRESPONDING ELEMENT REPRESENT A GRID LEVEL INDICATED AT TOP
 
+#REYNOLDS NUMBER
+set REYNOLDS_NUM                              {10.0E6,10.0E6,10.0E6,10.0E6,10.0E6}
+
+#MACH NUMBER
+set MACH                                                {0.15,0.15,0.15,0.15,0.15}
+
 #TARGET Y PLUS FOR RANS AND HYBRID RANS/LES
 set TARG_YPR                                    {0.04488,0.08977,1.0,3.591,10.181}
 
 #BOUNDARY BLOCK CELL GROWTH RATE
 set TARG_GR                                             {1.12,1.14,1.16,1.18,1.25}
 
-# CHORDWISE SPACING ACCORDING TO GRID GUIDELINE
+# CHORDWISE SPACING 
 set CHR_SPC                              {0.0019375,0.003875,0.00775,0.0155,0.051}
 
 # WAVE SPAVING GUIDELINE
 set WV_NOD                                                         {56,36,20,12,5}
 
-# TRAILING EDGE SPACING RATIO ACCORDING TO GRID GUIDELINE
+# TRAILING EDGE SPACING RATIO 
 set TE_SRT                           {0.00048,0.0012025,0.001925,0.0047625,0.0076}
 
-# TRAILING EDGE NUMBER OF POINTS ACCORDING TO GRID GUIDELINE
+# TRAILING EDGE NUMBER OF POINTS 
 set TE_PT                                                        {160,80,40,20,10}
 
-# EXPLICIT EXTRUSION FACTORS ACCORDING TO GRID GUIDELINE
+# EXPLICIT EXTRUSION FACTORS 
 set EXP_FAC                                             {0.45,0.45,0.45,0.45,0.45}
 
-# IMPLICIT EXTRUSION FACTORS ACCORDING TO GRID GUIDELINE
+# IMPLICIT EXTRUSION FACTORS 
 set IMP_FAC                                             {20.0,20.0,20.0,20.0,20.0}
 
-# NORMAL EXTRUSION VOLUME RATIO ACCORDING TO GRID GUIDELINE
+# NORMAL EXTRUSION VOLUME RATIO 
 set VOL_FAC                                              {0.45,0.45,0.45,0.45,0.5}
+
+#----------------------------------------------------------------------------------
 ```
 
 ![GUI](https://github.com/pdpdhp/wavymesher/blob/main/imgs/example.png)
