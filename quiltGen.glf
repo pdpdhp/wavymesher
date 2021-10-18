@@ -9,7 +9,7 @@
 
 proc MDL_GEN { flatback } {
 	
-	global span nxnodes nynodes airfoil_mdl FLTB_Crvs0 TE_thk ENDSU ENDSL
+	global span nxnodes nynodes airfoil_mdl FLTB_Crvs0 FLTB_Crvs1 TE_thk ENDSU ENDSL
 	global airfoil_input
 	
 	upvar 1 symsepdd asep

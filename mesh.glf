@@ -14,7 +14,7 @@ proc Topo_Prep_Mesh {wavyp} {
 	global N_third rightcon_top rightcon_bot airfoilfront left_hte right_hte leftcons rmesh_trsdoms middoms
 	global blk blkexam cae_solver w1_y GRD_TYP chordln Xzone extr_watchout
 	
-	global HYB_HEIGHT maxstepfac
+	global HYB_HEIGHT maxstepfac air_Crvs
 	
 	set Xzone [expr $chordln - ($wavyp*$chordln)/100.]
 	
@@ -46,6 +46,8 @@ proc Topo_Prep_Mesh {wavyp} {
 		lappend leftcons [lindex $con 0]
 		lappend leftcons [lindex $con 1]
 	}
+	
+	[lindex $leftcons 0] setDimension [[lindex $leftcons 3] getDimension ]
 	
 	set left_hte [lindex $Consdb end]
 	set right_hte [lindex $Consdb end-1]
@@ -180,7 +182,6 @@ proc Topo_Prep_Mesh {wavyp} {
 		$domtrn end
 	}
 	
-	
 	set dq_database [pw::Layer getLayerEntities -type pw::Quilt 0]
 	
 	set airfoilfront [[[lindex $blk 0] getFace 3] getDomains]
@@ -201,7 +202,25 @@ proc Topo_Prep_Mesh {wavyp} {
 	set hyb_path [[[lindex [[[lindex $blk 1] getFace 5] getDomains] end] getEdge 2] getConnector 1]
 	set hyb_spcon [[[lindex [[[lindex $blk 1] getFace 1] getDomains] end] getEdge 4] getConnector 1]
 	
-	set N_third [[[[lindex $airfoilfront 0] getEdge 4] getConnector 1] getDimension]
+	set airTop_con [[[lindex $airfoilfront 1] getEdge 2] getConnector 1]
+	set airBot_con [[[lindex $airfoilfront 0] getEdge 4] getConnector 1]
+
+	set N_third [$airBot_con getDimension]
+	
+	set up_Seg [pw::SegmentSpline create]
+		$up_Seg addPoint [[[lindex $leftcons 0] getNode End] getXYZ]
+		$up_Seg addPoint [[$airTop_con getNode End] getXYZ]
+	set up_Crv [pw::Curve create]
+		$up_Crv addSegment $up_Seg
+	
+	set low_Seg [pw::SegmentSpline create]
+		$low_Seg addPoint [[[lindex $leftcons 3] getNode Begin] getXYZ]
+		$low_Seg addPoint [[$airBot_con getNode End] getXYZ]
+	set low_Crv [pw::Curve create]
+		$low_Crv addSegment $low_Seg
+	
+	set air_Crvs [list $up_Crv $low_Crv]
+	
 	
 	set rmesh_trsdoms [list [lindex [lindex $dom_left_spc 0] 0] \
 						[lindex [lindex $dom_left_spc 1] 0] \

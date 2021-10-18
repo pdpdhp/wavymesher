@@ -342,7 +342,7 @@ proc surface_curve { surfaces } {
 	foreach srf $surfaces {
 
 		set Spsegment [pw::SegmentSpline create]
-		$Spsegment setSlope Akima
+		$Spsegment setSlope Free
 	
 		foreach node $srf {
 			$Spsegment addPoint [list [lindex $node 0] [lindex $node 1] [lindex $node 2]]

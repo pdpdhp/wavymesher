@@ -14,6 +14,8 @@ proc WaveRemesh {method wdpth wprc wscales woutdegs} {
 					right_hte leftcons rmesh_trsdoms middoms blk
 	global blktop blkbot blkte wMinVolv
 	
+	global wave_Crvs
+	
 	upvar 1 fexmod outfile
 	
 	set waveVolexam [pw::Examine create BlockVolume]
@@ -31,9 +33,16 @@ proc WaveRemesh {method wdpth wprc wscales woutdegs} {
 		lappend w2_pts [list $x $y $z]
 	}
 	
-	set wave_bcon [pw::Connector createFromPoints $w1_pts]
-	set wave_tcon [pw::Connector createFromPoints $w2_pts]
+	set wave_Crvs [surface_curve [list $w1_pts $w2_pts]]
 	
+	foreach wcrv $wave_Crvs {
+		lappend wave_Cons [pw::Connector createOnDatabase $wcrv]
+		[lindex $wave_Cons end] setDimension $N_third
+	}
+	
+	set wave_bcon [lindex $wave_Cons 0]
+	set wave_tcon [lindex $wave_Cons 1]
+
 	set right_hteseg [pw::SegmentSpline create]
 	$right_hteseg addPoint [[$wave_bcon getNode End] getXYZ]
 	$right_hteseg addPoint [[$wave_tcon getNode End] getXYZ]
@@ -56,6 +65,12 @@ proc WaveRemesh {method wdpth wprc wscales woutdegs} {
 	#domte
 	set domwte_te [pw::DomainStructured createFromConnectors \
 			[list $left_hte $wave_tcon $wave_bcon $right_hte]]
+	
+#	#TE wavy surface interpolate
+#	set wavyTEsrf [pw::Surface create]
+#	$wavyTEsrf interpolate -orient Same [lindex $wave_Crvs 1] [lindex $wave_Crvs 0]
+#	
+#	pw::Entity project -type ClosestPoint $domwte_te $wavyTEsrf
 	
 	#dommid1
 	set domwte_mid1 [pw::DomainStructured createFromConnectors \

@@ -109,9 +109,9 @@ proc CAE_Export { } {
 		}
 			
 		#block 2
-		set dommrightqbc(3) [[[lindex $blk 2] getFace 1] getDomains]
+		set dommrightqbc(3) [[[lindex $blk 2] getFace 2] getDomains]
 		set dommleftqbc(3) [[[lindex $blk 2] getFace 4] getDomains]
-		set dommairqbc(2) [[[lindex $blk 2] getFace 2] getDomains]
+		set dommairqbc(2) [[[lindex $blk 2] getFace 1] getDomains]
 			
 		foreach ent $dommrightqbc(3) {
 			lappend domrightqbc $ent
