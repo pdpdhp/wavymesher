@@ -42,11 +42,11 @@ AMPLITUDE = [0.0125]
 #
 #
 #Number of waves in lateral direction
-NUM_WAVE = [0]
+NUM_WAVE = [4]
 #
 #
 #Number of points per wave in lateral direction
-WV_NOD = [12.0]
+WV_NOD = [56.0]
 #
 #
 #Span Dimension
@@ -62,11 +62,11 @@ ZZ_Abot = [0]
 #
 #
 # ending point heights
-ENDSU = [1.0,0.08703,0.0]
+ENDSU = [1.0,0.05,0.0]
 #
 #
 # ending point heights
-ENDSL = [1.0,-0.087366,0.0]
+ENDSL = [1.0,-0.05,0.0]
 #
 #====================================================================
 #

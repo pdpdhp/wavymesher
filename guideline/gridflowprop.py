@@ -18,7 +18,7 @@ Path(f"{dirname}").mkdir(parents=True, exist_ok=True)
 
 #----------------------------GRID GUIDELINE--------------------
 #reynoldsnumbers
-REYNOLDS_NUM = [10.0E6,10.0E6,10.0E6,10.0E6,10.0E6]
+REYNOLDS_NUM = [10.0E6,1.0E6,1.0E6,1.0E6,1.0E6]
 #
 #
 #machnumber
