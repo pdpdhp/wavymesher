@@ -9,6 +9,8 @@
 
 proc Source_Unstr { } {
 	
+	global pi
+	
 	upvar 1 spacecon wu
 
 	#size field defination
@@ -24,6 +26,7 @@ proc Source_Unstr { } {
 		lappend cyndecayfactor [expr [lindex $cyndecayfactor $i]-0.1]
 	}
 	
+	set alpha [expr (-(90+0)*$pi)/180]
 	
 	for {set i 0} {$i<5} {incr i} {
 		lappend cynsourcesh [pw::SourceShape create]
@@ -31,7 +34,10 @@ proc Source_Unstr { } {
 			[lindex $base_rad $i] -topRadius [lindex $top_rad $i] -length [lindex $cyn_len $i]
 
 		[lindex $cynsourcesh $i] setTransform \
-				[list 0 0 1 0 0 1 0 0 -1 0 0 0 0.083520643853 -0.0109231602598 0 1]
+				[list [expr cos($alpha)] 0 [expr -1*sin($alpha)] 0 \
+					0 1 0 0 [expr sin($alpha)] 0 [expr cos($alpha)] 0 \
+							0.083520643853 -0.0109231602598 0 1]
+
 		[lindex $cynsourcesh $i] setPivot Top
 		[lindex $cynsourcesh $i] setSectionMinimum 0
 		[lindex $cynsourcesh $i] setSectionMaximum 360
