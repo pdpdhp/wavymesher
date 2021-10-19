@@ -15,6 +15,11 @@ proc Topo_Prep_Mesh {wavyp} {
 	global blk blkexam cae_solver w1_y GRD_TYP chordln Xzone extr_watchout
 	
 	global HYB_HEIGHT maxstepfac air_Crvs
+	global domBCs blkBCs 
+	
+	# collecting boundaries as it builds
+	array set domBCs []
+	array set blkBCs []
 	
 	set Xzone [expr $chordln - ($wavyp*$chordln)/100.]
 	
@@ -150,7 +155,6 @@ proc Topo_Prep_Mesh {wavyp} {
 	lappend alldoms [lindex [lindex $dom_left_spc 0] 1]
 	lappend alldoms [lindex [lindex $dom_left_spc 1] 1]
 
-	
 	set fstr [pw::FaceStructured createFromDomains $alldoms]
 		
 		
@@ -182,11 +186,40 @@ proc Topo_Prep_Mesh {wavyp} {
 		$domtrn end
 	}
 	
+	lappend domBCs(1) [lindex $alldoms 0]
+	lappend blkBCs(1) [lindex $blk 0]
+	
+	#collecting BCs | left
+	foreach dom [lrange $alldoms 1 end] {
+		lappend domBCs(1) $dom
+		lappend blkBCs(1) [lindex $blk 1]
+	}
+	
+	#collecting BCs | right and farfield
+	foreach bk $blk {
+		foreach dom [[$bk getFace 6] getDomains] {
+			lappend domBCs(2) $dom
+			lappend blkBCs(2) $bk
+		}
+		
+		foreach dom [[$bk getFace 5] getDomains] {
+			lappend domBCs(3) $dom
+			lappend blkBCs(3) $bk
+		}
+	}
+	
 	set dq_database [pw::Layer getLayerEntities -type pw::Quilt 0]
 	
 	set airfoilfront [[[lindex $blk 0] getFace 3] getDomains]
 	
 	pw::Entity project -type ClosestPoint $airfoilfront $dq_database
+	
+	#collecting BCs | surface
+	foreach dom $airfoilfront {
+		lappend domBCs(0) $dom
+		lappend blkBCs(0) [lindex $blk 0]
+	}
+
 	
 	foreach bl $blk {
 		$blkexam addEntity $bl
@@ -225,7 +258,7 @@ proc Topo_Prep_Mesh {wavyp} {
 	set rmesh_trsdoms [list [lindex [lindex $dom_left_spc 0] 0] \
 						[lindex [lindex $dom_left_spc 1] 0] \
 							[lindex [lindex $dom_left_spd 0] 0]]
-	
+
 	set middoms [[[lindex $blk 1] getFace 3] getDomains]
 	
 	if { ! [string compare $GRD_TYP HYB] } { HYBRID_Mesh $hyb_cons $hyb_path $hyb_spcon $N_third}

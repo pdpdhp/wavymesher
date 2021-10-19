@@ -46,7 +46,7 @@ NUM_WAVE = [4]
 #
 #
 #Number of points per wave in lateral direction
-WV_NOD = [56.0]
+WV_NOD = [35.0]
 #
 #
 #Span Dimension

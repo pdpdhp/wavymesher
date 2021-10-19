@@ -76,13 +76,13 @@ set TOTAL_HEIGHT                  600;#
 # UNSTRUCTURED SETTINGS FOR GRD_TYP: HYB
 #====================================================
 #UNSTRUCTURED SOLVER ALGORITHM: 
-set UNS_ALG      AdvancingFrontOrtho;# AdvancingFront | AdvancingFrontOrtho | Delaunay
+set UNS_ALG       AdvancingFrontOrtho;# AdvancingFront | AdvancingFrontOrtho | Delaunay
 
 #UNSTRUCTRED SOLVER CELL TYPE: 
-set UNS_CTYP            TriangleQuad;# TriangleQuad | Triangle
+set UNS_CTYP             TriangleQuad;# TriangleQuad | Triangle
 
 #GENERAL DECAY FACTOR FOR UNSTRUCTRED SOLVER
-set SIZE_DCY                     0.6;# From 0.0 to 1.0 | larger, mesh becomes denser around config
+set SIZE_DCY                      0.6;# From 0.0 to 1.0 | larger, mesh becomes denser around config
 
 #GRID DIMENSION:
 #====================================================
@@ -122,7 +122,7 @@ set save_native                   YES;# (YES/NO)
 #EACH CORRESPONDING ELEMENT REPRESENT A GRID LEVEL INDICATED AT TOP
 
 #REYNOLDS NUMBER
-set REYNOLDS_NUM                              {10.0E6,10.0E6,10.0E6,10.0E6,10.0E6}
+set REYNOLDS_NUM                                   {1.0E6,1.0E6,1.0E6,1.0E6,1.0E6}
 
 #MACH NUMBER
 set MACH                                                {0.15,0.15,0.15,0.15,0.15}

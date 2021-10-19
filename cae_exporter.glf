@@ -9,10 +9,12 @@
 
 proc CAE_Export { } {
 
-	global blk blktop blkbot blkte hyb_blk hdoms scriptDir save_native
+	global blk blktop blkbot blkte hyb_blk scriptDir save_native
 	global cae_solver POLY_DEG GRD_TYP symsepdd res_lev 
 	global blkexamv wMinVolv cae_export fexmod
-	global airfoil_mdl airfoil_input domairqbc
+	global airfoil_mdl airfoil_input 
+	
+	global domBCs blkBCs
 	
 	#==============================================CAE Export--==========================================
 
@@ -36,272 +38,31 @@ proc CAE_Export { } {
 		pw::Application setCAESolverAttribute ExportPolynomialDegree $POLY_DEG
 	}
 
-	#assigning BCs
-	#CAE Boundary Condition
-	set domairqbc []
-	set blkairqbc []
-	set domleftqbc []
-	set blkleftqbc []
-	set domrightqbc []
-	set blkrightqbc []
-	set domfarqbc []
-	set blkfarqbc []
-	
-	array set dommairqbc []
-	array set dommrightqbc []
-	array set dommleftqbc []
-	array set dommfarqbc []
-	set k 1
-	
-	for {set k 1} {$k<=[llength $blk]} {incr k} {
-		set dommairqbc($k) []
-		set dommrightqbc($k) []
-		set dommleftqbc($k) []
-		set dommfarqbc($k) []
-	}
-	
-	if { ! [string compare $GRD_TYP STR] } {
-		# finding proper domains and blocks corresponding to BCs
-		#block 0
-		set dommairqbc(1) [[[lindex $blk 0] getFace 3] getDomains]
-		set dommrightqbc(1) [[[lindex $blk 0] getFace 6] getDomains]
-		set dommleftqbc(1) [[[lindex $blk 0] getFace 1] getDomains]
-		set dommfarqbc(1) [[[lindex $blk 0] getFace 5] getDomains]
-		
-		foreach ent $dommairqbc(1) {
-			lappend domairqbc $ent
-			lappend blkairqbc [lindex $blk 0]
-		}
-			
-		foreach ent $dommrightqbc(1) {
-			lappend domrightqbc $ent
-			lappend blkrightqbc [lindex $blk 0]
-		}
-			
-		foreach ent $dommleftqbc(1) {
-			lappend domleftqbc $ent
-			lappend blkleftqbc [lindex $blk 0]
-		}
-		
-		foreach ent $dommfarqbc(1) {
-			lappend domfarqbc $ent
-			lappend blkfarqbc [lindex $blk 0]
-		}
-		
-		#block 1
-		set dommrightqbc(2) [[[lindex $blk 1] getFace 6] getDomains]
-		set dommleftqbc(2) [[[lindex $blk 1] getFace 1] getDomains]
-		set dommfarqbc(2) [[[lindex $blk 1] getFace 5] getDomains]
-			
-		foreach ent $dommrightqbc(2) {
-			lappend domrightqbc $ent
-			lappend blkrightqbc [lindex $blk 1]
-		}
-		
-		foreach ent $dommleftqbc(2) {
-			lappend domleftqbc $ent
-			lappend blkleftqbc [lindex $blk 1]
-		}
-		
-		foreach ent $dommfarqbc(2) {
-			lappend domfarqbc $ent
-			lappend blkfarqbc [lindex $blk 1]
-		}
-			
-		#block 2
-		set dommrightqbc(3) [[[lindex $blk 2] getFace 2] getDomains]
-		set dommleftqbc(3) [[[lindex $blk 2] getFace 4] getDomains]
-		set dommairqbc(2) [[[lindex $blk 2] getFace 1] getDomains]
-			
-		foreach ent $dommrightqbc(3) {
-			lappend domrightqbc $ent
-			lappend blkrightqbc [lindex $blk 2]
-		}
-		
-		foreach ent $dommleftqbc(3) {
-			lappend domleftqbc $ent
-			lappend blkleftqbc [lindex $blk 2]
-		}
-		
-		foreach ent $dommairqbc(2) {
-			lappend domairqbc $ent
-			lappend blkairqbc [lindex $blk 2]
-		}
-			
-		#block 3
-		set dommrightqbc(4) [[[lindex $blk 3] getFace 2] getDomains]
-		set dommleftqbc(4) [[[lindex $blk 3] getFace 4] getDomains]
-		set dommairqbc(3) [[[lindex $blk 3] getFace 1] getDomains]
-		
-		foreach ent $dommrightqbc(4) {
-			lappend domrightqbc $ent
-			lappend blkrightqbc [lindex $blk 3]
-		}
-		
-		foreach ent $dommleftqbc(4) {
-			lappend domleftqbc $ent
-			lappend blkleftqbc [lindex $blk 3]
-		}
-		
-		foreach ent $dommairqbc(3) {
-			lappend domairqbc $ent
-			lappend blkairqbc [lindex $blk 3]
-		}
-			
-		#block 4
-		set dommrightqbc(5) [[[lindex $blk 4] getFace 2] getDomains]
-		set dommleftqbc(5) [[[lindex $blk 4] getFace 4] getDomains]
-		set dommairqbc(4) [[[lindex $blk 4] getFace 1] getDomains]
-		
-		foreach ent $dommrightqbc(5) {
-			lappend domrightqbc $ent
-			lappend blkrightqbc [lindex $blk 4]
-		}
-		
-		foreach ent $dommleftqbc(5) {
-			lappend domleftqbc $ent
-			lappend blkleftqbc [lindex $blk 4]
-		}
-		
-		foreach ent $dommairqbc(4) {
-			lappend domairqbc $ent
-			lappend blkairqbc [lindex $blk 4]
-		}
-	
-	} elseif { ! [string compare $GRD_TYP HYB] } {
-		
-		set blk [list {*}$blk $hyb_blk]
-		
-		#block 0
-		set dommairqbc(1) [[[lindex $blk 0] getFace 3] getDomains]
-		set dommrightqbc(1) [[[lindex $blk 0] getFace 6] getDomains]
-		set dommleftqbc(1) [[[lindex $blk 0] getFace 1] getDomains]
-		
-		foreach ent $dommairqbc(1) {
-			lappend domairqbc $ent
-			lappend blkairqbc [lindex $blk 0]
-		}
-			
-		foreach ent $dommrightqbc(1) {
-			lappend domrightqbc $ent
-			lappend blkrightqbc [lindex $blk 0]
-		}
-			
-		foreach ent $dommleftqbc(1) {
-			lappend domleftqbc $ent
-			lappend blkleftqbc [lindex $blk 0]
-		}
-
-		#block 1
-		set dommrightqbc(2) [[[lindex $blk 1] getFace 6] getDomains]
-		set dommleftqbc(2) [[[lindex $blk 1] getFace 1] getDomains]
-			
-		foreach ent $dommrightqbc(2) {
-			lappend domrightqbc $ent
-			lappend blkrightqbc [lindex $blk 1]
-		}
-		
-		foreach ent $dommleftqbc(2) {
-			lappend domleftqbc $ent
-			lappend blkleftqbc [lindex $blk 1]
-		}
-		
-		#block 2
-		set dommrightqbc(3) [[[lindex $blk 2] getFace 1] getDomains]
-		set dommleftqbc(3) [[[lindex $blk 2] getFace 4] getDomains]
-		set dommairqbc(2) [[[lindex $blk 2] getFace 2] getDomains]
-			
-		foreach ent $dommrightqbc(3) {
-			lappend domrightqbc $ent
-			lappend blkrightqbc [lindex $blk 2]
-		}
-		
-		foreach ent $dommleftqbc(3) {
-			lappend domleftqbc $ent
-			lappend blkleftqbc [lindex $blk 2]
-		}
-		
-		foreach ent $dommairqbc(2) {
-			lappend domairqbc $ent
-			lappend blkairqbc [lindex $blk 2]
-		}
-		
-		#block 3
-		set dommrightqbc(4) [[[lindex $blk 3] getFace 2] getDomains]
-		set dommleftqbc(4) [[[lindex $blk 3] getFace 4] getDomains]
-		set dommairqbc(3) [[[lindex $blk 3] getFace 1] getDomains]
-		
-		foreach ent $dommrightqbc(4) {
-			lappend domrightqbc $ent
-			lappend blkrightqbc [lindex $blk 3]
-		}
-		
-		foreach ent $dommleftqbc(4) {
-			lappend domleftqbc $ent
-			lappend blkleftqbc [lindex $blk 3]
-		}
-		
-		foreach ent $dommairqbc(3) {
-			lappend domairqbc $ent
-			lappend blkairqbc [lindex $blk 3]
-		}
-			
-		#block 4
-		set dommrightqbc(5) [[[lindex $blk 4] getFace 2] getDomains]
-		set dommleftqbc(5) [[[lindex $blk 4] getFace 4] getDomains]
-		set dommairqbc(4) [[[lindex $blk 4] getFace 1] getDomains]
-		
-		foreach ent $dommrightqbc(5) {
-			lappend domrightqbc $ent
-			lappend blkrightqbc [lindex $blk 4]
-		}
-		
-		foreach ent $dommleftqbc(5) {
-			lappend domleftqbc $ent
-			lappend blkleftqbc [lindex $blk 4]
-		}
-		
-		foreach ent $dommairqbc(4) {
-			lappend domairqbc $ent
-			lappend blkairqbc [lindex $blk 4]
-		}
-		
-		#block hybrid
-		lappend domfarqbc [lindex $hdoms 0]
-		lappend blkfarqbc [lindex $blk end]
-		
-		lappend domleftqbc [lindex $hdoms 1]
-		lappend blkleftqbc [lindex $blk end]
-		
-		lappend domrightqbc [lindex $hdoms 2]
-		lappend blkrightqbc [lindex $blk end]
-
-	} 
+	if { ! [string compare $GRD_TYP HYB] } { set blk [list {*}$blk $hyb_blk] } 
 	
 	#assigning domains to BCs
-	foreach domain $domairqbc block $blkairqbc {
-		$bcairfoil apply [list [list $block $domain]]
-	}
+	foreach domain $domBCs(0) block $blkBCs(0) {$bcairfoil apply [list [list $block $domain]]}
 
-	foreach domain $domrightqbc block $blkrightqbc {
-		$bcright apply [list [list $block $domain]]
-	}
+	foreach domain $domBCs(2) block $blkBCs(2) {$bcright apply [list [list $block $domain]]}
 
-	foreach domain $domleftqbc block $blkleftqbc {
-		$bcleft apply [list [list $block $domain]]
-	}
+	foreach domain $domBCs(1) block $blkBCs(1) {$bcleft apply [list [list $block $domain]]}
 	
-	foreach domain $domfarqbc block $blkfarqbc {
-		$bcfar apply [list [list $block $domain]]
-	}
+	foreach domain $domBCs(3) block $blkBCs(3) {$bcfar apply [list [list $block $domain]]}
 
-	foreach bl $blk {
-		lappend blkncells [$bl getCellCount]
-	}
+	foreach bl $blk {lappend blkncells [$bl getCellCount]}
 		
 	set blkncell [expr [join $blkncells +]]
 	set blkorder [string length $blkncell]
-
+	
+	#collecting surface elements
+	foreach dom $domBCs(0) { 
+		lappend domelm [$dom getCellCount] 
+		lappend dompts [$dom getPointCount]
+	}
+	
+	set surface_elements [expr [join $domelm +]]
+	set surface_nodes [expr [join $dompts +]]
+	
 	if {$blkorder<6} {
 		set blkID "[string range $blkncell 0 1]k"
 	} elseif {$blkorder>=6 && $blkorder<7} {
@@ -320,15 +81,18 @@ proc CAE_Export { } {
 		
 	puts $fexmod "QUASI 2D MULTIBLOCK STRUCTURED GRID | FLATBACK PROFILE | GRID LEVEL $res_lev:"
 
-	puts "QUASI 2D GRID GENERATED FOR LEVEL $res_lev | TOTAL CELLS: $blkncell HEX"
+	puts "QUASI 2D GRID GENERATED FOR LEVEL $res_lev | TOTAL CELLS: $blkncell CELLS"
 	puts $symsepdd
-
+	puts "SURFACE ELEMENTS: $surface_elements | SURFACE NODES: $surface_nodes"
+	puts $symsepdd
+	
 	puts $fexmod [string repeat - 50]
 	puts $fexmod "total blocks: [llength $blkncells]"
 	puts $fexmod "total cells: $blkncell cells"
+	puts $fexmod "total surface elements: $surface_elements cells"
+	puts $fexmod "total surface mesh points: $surface_nodes nodes"
 	puts $fexmod "min volume: [format "%*e" 5 [expr min($blkexamv, $wMinVolv)]]"
-		
-		
+
 	if {[string compare $cae_export YES]==0} {
 		# creating export directory
 		set exportDir [file join $scriptDir grids/2dquasi]
@@ -404,13 +168,13 @@ proc CAE_Export { } {
 	
 	proc WavyCAD_export { } {
 		
-		global domairqbc airfoil_input scriptDir symsepdd
+		global domBCs airfoil_input scriptDir symsepdd
 		
 		set exportDir [file join $scriptDir grids/models]
 		file mkdir $exportDir
 		append wfltbackname [lindex [split $airfoil_input .] 0] "_" wavyflatback
 		
-		set wfltex [pw::Application begin GridExport $domairqbc]
+		set wfltex [pw::Application begin GridExport $domBCs(0)]
 		$wfltex initialize -strict -type IGES "$exportDir/$wfltbackname.iges"
 		$wfltex setAttribute DomainSurfaceDegree Bicubic
 		$wfltex setAttribute FileUnits Meters

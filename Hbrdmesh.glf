@@ -50,7 +50,8 @@ proc Source_Unstr { } {
 
 proc HYBRID_Mesh { cons path spacecon steps} {
 	
-	global HYB_HEIGHT grg leftcons res_lev maxstepfac exp_sg imp_sg vol_sg hyb_blk hdoms blkexam
+	global HYB_HEIGHT grg leftcons res_lev maxstepfac exp_sg imp_sg vol_sg hyb_blk blkexam
+	global domBCs blkBCs
 	
 	set avg_spc [$spacecon getAverageSpacing]
 	
@@ -197,7 +198,20 @@ proc HYBRID_Mesh { cons path spacecon steps} {
 	lappend hdomleft [[lindex [$hyb_blk getFaces] 0] getDomains]
 	lappend hdomright [[lindex [$hyb_blk getFaces] end] getDomains]
 	
-	set hdoms [list {*}$hdomfar {*}$hdomleft {*}$hdomright]
+	foreach dom $hdomfar {
+		lappend domBCs(3) $dom
+		lappend blkBCs(3) $hyb_blk
+	}
+	
+	foreach dom $hdomleft {
+		lappend domBCs(1) $dom
+		lappend blkBCs(1) $hyb_blk
+	}
+	
+	foreach dom $hdomright {
+		lappend domBCs(2) $dom
+		lappend blkBCs(2) $hyb_blk
+	}
 	
 	$blkexam addEntity $hyb_blk
 	

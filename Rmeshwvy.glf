@@ -14,7 +14,7 @@ proc WaveRemesh {method wdpth wprc wscales woutdegs} {
 					right_hte leftcons rmesh_trsdoms middoms blk
 	global blktop blkbot blkte wMinVolv
 	
-	global wave_Crvs
+	global wave_Crvs domBCs blkBCs 
 	
 	upvar 1 fexmod outfile
 	
@@ -66,12 +66,6 @@ proc WaveRemesh {method wdpth wprc wscales woutdegs} {
 	set domwte_te [pw::DomainStructured createFromConnectors \
 			[list $left_hte $wave_tcon $wave_bcon $right_hte]]
 	
-#	#TE wavy surface interpolate
-#	set wavyTEsrf [pw::Surface create]
-#	$wavyTEsrf interpolate -orient Same [lindex $wave_Crvs 1] [lindex $wave_Crvs 0]
-#	
-#	pw::Entity project -type ClosestPoint $domwte_te $wavyTEsrf
-	
 	#dommid1
 	set domwte_mid1 [pw::DomainStructured createFromConnectors \
 		[list $wave_tcon [[[lindex $domtrs 0] getEdge 2] getConnector 1] \
@@ -107,6 +101,18 @@ proc WaveRemesh {method wdpth wprc wscales woutdegs} {
 	
 	$waveVolexam addEntity $blktop
 	
+	#collecting BCs | left
+	lappend domBCs(1) [lindex $rmesh_trsdoms 1]
+	lappend blkBCs(1) $blktop
+
+	#collecting BCs | right
+	lappend domBCs(2) [lindex $domtrs 1]
+	lappend blkBCs(2) $blktop
+	
+	#collecting BCs | surface
+	lappend domBCs(0) $domwte_top
+	lappend blkBCs(0) $blktop
+	
 	#blk 2
 	set blkbot [pw::BlockStructured create]
 	set pf12 [pw::FaceStructured create]
@@ -129,7 +135,19 @@ proc WaveRemesh {method wdpth wprc wscales woutdegs} {
 	$blkbot addFace $pf62
 	
 	$waveVolexam addEntity $blkbot
-
+	
+	#collecting BCs | left
+	lappend domBCs(1) [lindex $rmesh_trsdoms 2]
+	lappend blkBCs(1) $blkbot
+	
+	#collecting BCs | right
+	lappend domBCs(2) [lindex $domtrs 2]
+	lappend blkBCs(2) $blkbot
+	
+	#collecting BCs | surface
+	lappend domBCs(0) $domwte_bot
+	lappend blkBCs(0) $blkbot
+	
 	#blk 2
 	set blkte [pw::BlockStructured create]
 	set pf13 [pw::FaceStructured create]
@@ -152,6 +170,18 @@ proc WaveRemesh {method wdpth wprc wscales woutdegs} {
 	$blkte addFace $pf63
 	
 	$waveVolexam addEntity $blkte
+	
+	#collecting BCs | left
+	lappend domBCs(1) [lindex $rmesh_trsdoms 0]
+	lappend blkBCs(1) $blkte
+	
+	#collecting BCs | right
+	lappend domBCs(2) [lindex $domtrs 0]
+	lappend blkBCs(2) $blkte
+	
+	#collecting BCs | surface
+	lappend domBCs(0) $domwte_te
+	lappend blkBCs(0) $blkte
 	
 	$waveVolexam examine
 	set wMinVolv [$waveVolexam getMinimum]

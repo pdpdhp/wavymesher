@@ -108,22 +108,8 @@ proc blend_wave { mtd dpth prct wave_bcon wave_tcon airfoilfront leftcons domtrs
 	lappend midWTCrv $aft
 	lappend midWBCrv $afb
 	
-	if { [string compare $mtd spline]==0 } {
+	if { ! [string compare $mtd spline] } {
 	
-#		set lft_slpin [pwu::Vector3 subtract [[lindex $leftcons 0] getXYZ -grid \
-#					[expr [[lindex $leftcons 0] getDimension]-$slopgNum-1]] \
-#									[[lindex $leftcons 0] getXYZ -arc 1] ]
-#		
-#		set lfb_slpin [pwu::Vector3 subtract [[lindex $leftcons 3] getXYZ -grid \
-#					$slopgNum] [[lindex $leftcons 3] getXYZ -grid 1]]
-#		
-#		set lft_slpout [pwu::Vector3 subtract [[lindex $leftcons 0] getXYZ -grid $slopgNum] \
-#									[[lindex $leftcons 0] getXYZ -arc 0] ]
-#		
-#		set lfb_slpout [pwu::Vector3 subtract [[lindex $leftcons 3] getXYZ -grid \
-#						[expr [[lindex $leftcons 3] getDimension]-$slopgNum-1]] \
-#									[[lindex $leftcons 3] getXYZ -arc 1] ]
-		
 		set otopslp [lindex $woutdegs 0]
 		set obotslp [lindex $woutdegs 1]
 		
@@ -196,7 +182,7 @@ proc blend_wave { mtd dpth prct wave_bcon wave_tcon airfoilfront leftcons domtrs
 			}
 		}
 
-	} elseif { [string compare $mtd default] || [string compare $mtd DU97function] } {
+	} elseif { ! [string compare $mtd default] || ! [string compare $mtd DU97function] } {
 		
 		foreach y [lrange $ys_Pos 1 end-1] { 
 			

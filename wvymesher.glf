@@ -11,11 +11,11 @@ package require PWI_Glyph 3.18.3
 
 proc Config_Prep { } {
 
-	global defset guidelineDir MeshParameters res_lev WAVE_TYPE NUM_WAVE
+	global defset guidelineDir MeshParameters MparafullFilename res_lev WAVE_TYPE NUM_WAVE
 	
 	if { $MeshParameters != "" } {
 		puts "GRID VARIABLES ARE SET BY $MeshParameters"
-		set defset [ParamDefualt $MeshParameters]
+		set defset [ParamDefualt $MparafullFilename]
 	} else {
 		puts "DEFAULT GRID VARIABLES ARE SET BY defaultMeshParameters.glf"
 	}
@@ -84,7 +84,7 @@ proc CAD_Read { airfoilp } {
 
 proc WAVYMESHER {} {
 	
-	global MeshParameters nprofile NprofullFilename
+	global MeshParameters nprofile NprofullFilename MparafullFilename
 	global res_lev ypg dsg grg chord_sg
 	global scriptDir fexmod waveDir blkexam blkexamv
 	global wave_sg span 
@@ -313,8 +313,10 @@ if [pw::Application isInteractive] {
 	if {[llength $argv] == 2} {
 		set MeshParameters [lindex $argv 0]
 		set NprofullFilename [lindex $argv 1]
+		set nprofile [file tail $NprofullFilename]
 	} elseif {[llength $argv] == 1} {
 		set NprofullFilename [lindex $argv 0]
+		set nprofile [file tail $NprofullFilename]
 	} else {
 	  puts "Invalid command line input! WITHOUT AIRFOIL COORDINATES AS INPUT THIS PROGRAM DOESN'T WORK."
 	  puts "pointwise -b wvymesher.glf ?MeshParameters.glf? airfoil_coordinates.txt <airfoil file>"
