@@ -311,8 +311,9 @@ if [pw::Application isInteractive] {
 } else {
 	
 	if {[llength $argv] == 2} {
-		set MeshParameters [lindex $argv 0]
+		set MparafullFilename [lindex $argv 0]
 		set NprofullFilename [lindex $argv 1]
+		set MeshParameters [file tail $MparafullFilename]
 		set nprofile [file tail $NprofullFilename]
 	} elseif {[llength $argv] == 1} {
 		set NprofullFilename [lindex $argv 0]
