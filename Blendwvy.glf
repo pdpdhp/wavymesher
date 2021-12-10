@@ -71,7 +71,7 @@ proc blend_wave { mtd dpth prct wave_bcon wave_tcon airfoilfront leftcons domtrs
 	RotTrsCrvs $FLTB_Crvs1 $span 0
 	RotTrsCrvs $FLTB_Crvs0 0 -90
 	
-	set nwPos [expr int($wave_sg*$NUM_WAVE)]
+	set nwPos [expr int($wave_sg*[lindex [split $NUM_WAVE ","] 0])]
 	set nsPos [expr int(3*$midDimTop)]
 
 	set y_Pos [.. 0 $nwPos]

@@ -11,20 +11,20 @@ import numpy as np
 import math
 from pathlib import Path
 from math import hypot
-
+from matplotlib import pyplot as plt
 import os
 dirname = os.path.dirname(os.path.realpath(__file__))
 
 Path(f"{dirname}").mkdir(parents=True, exist_ok=True)
 
-#Types of waves
+#wave tags to identify them
 W1 = 1
 W2 = 2
 W3 = 3
 YES = 1
 NO = 0
 #
-#----------------------------Wave Specifications--------------------
+#------------------------wave specifications are set by wavymesher scripts--------------------
 #Wave Type
 WAVE_TYPE = [W2]
 #
@@ -46,7 +46,7 @@ NUM_WAVE = [4]
 #
 #
 #Number of points per wave in lateral direction
-WV_NOD = [35.0]
+WV_NOD = [5.0]
 #
 #
 #Span Dimension
@@ -93,14 +93,18 @@ xbot_pos = np.repeat(1, len(y_pos))
 max_thick = ENDSU[1] - ENDSL[1]
 half_thick = max_thick/2
 
+# different wave equations
 if WAVE_TYPE[0] == W1:
+	wchar = 'W1'
 	ztop_pos = AMPLITUDE * np.sin(np.radians(nperiod[0]*np.array(y_pos))) + ENDSU[1]
 	zbot_pos = AMPLITUDE * np.sin(np.radians(nperiod[0]*np.array(y_pos))) - ENDSL[1]
 elif WAVE_TYPE[0] == W2:
+	wchar = 'W2'
 	AMPLITUDE = 0.25*max_thick*(1 -(WAVE_DEPTH[0]/100))
 	ztop_pos = AMPLITUDE * np.cos(np.radians(nperiod[0]*np.array(y_pos))) + ENDSU[1] - AMPLITUDE
 	zbot_pos = -AMPLITUDE * np.cos(np.radians(nperiod[0]*np.array(y_pos))) - ENDSL[1] + AMPLITUDE
 elif WAVE_TYPE[0] == W3:
+	wchar = 'W3'
 	ztop_pos = ENDSU[1] - AMPLITUDE * np.cos(np.radians(nperiod[0]*np.array(y_pos))) * np.sin(np.radians(nperiod[1]*np.array(y_pos)))
 	zbot_pos =  - ENDSL[1] + AMPLITUDE * np.cos(np.radians(nperiod[0]*np.array(y_pos))) * np.sin(np.radians(nperiod[1]*np.array(y_pos)))
 
@@ -111,6 +115,7 @@ for i in range(int(len(y_pos))):
 	topnodes.T[:][i] = rtop.dot(topnodes.T[:][i])
 	botnodes.T[:][i] = rbot.dot(botnodes.T[:][i])
 
+# adjusting ending points in spanwise direction for small variations
 xtop_pos = topnodes[:][0] + 1.0
 xbot_pos = botnodes[:][0] + 1.0
 
@@ -133,11 +138,33 @@ ffztop_pos[-1] = ENDSU[1]
 ffzbot_pos[-1] = ENDSL[1]
 
 #------------------GRID PROPERTISE--------------
+#upper wavy coordinates
 wave1=np.column_stack((ffxtop_pos, y_pos, ffztop_pos))
 
-#GRID PROPERTIES INCH
+#lower wavy coordinates
 wave2=np.column_stack((ffxbot_pos, y_pos, ffzbot_pos))
 
+#-----------------WAVE PROPERTISE---------------
+upmax = max(wave1[:,2])
+upmin = min(wave1[:,2])
+
+lowmax = max(wave2[:,2])
+lowmin = min(wave2[:,2])
+
+upmax_cor = np.zeros(Npt)+upmax
+lowmax_cor = np.zeros(Npt)+lowmax
+upmin_cor =  np.zeros(Npt)+upmin
+lowmin_cor =  np.zeros(Npt)+lowmin
+
+wvdepth = (abs(upmin-lowmax)/abs(upmax-lowmin))*100
+wvampl = (upmax-upmin)*0.5
+
+#averaging local thickness across the wave
+avg_thk = 0.0
+for i in range(len(wave1[:,2])):
+	avg_thk += abs(wave1[i,2] - wave2[i,2])
+
+avg_thk = avg_thk/(i+1)
 
 #------------writing files---------------------
 # grid propertise metric
@@ -151,3 +178,40 @@ for i in range(len(y_pos)):
 	f.write("  % 1.7e   % 1.7e  % 1.7e\n" % (wave2[i,0],wave2[i,1],wave2[i,2]))
 f.close()
 
+#---------------plotting the waves--------------
+plt.title("Traling Edge Wavy Line", fontsize=12)
+plt.plot(wave1[:,1],wave1[:,2], '-r', label='upper wavy traling edge', Linewidth=1.5);
+plt.plot(wave2[:,1],wave2[:,2], '-b', label='lower wavy traling edge', Linewidth=1.5);
+plt.plot(wave2[:,1],upmax_cor, '-k', label='upper max', Linewidth=0.15);
+plt.plot(wave2[:,1],upmin_cor, '-.k', label='upper min', dashes=(5, 15), Linewidth=0.25);
+plt.plot(wave2[:,1],lowmax_cor, '-.k', label='lower max', dashes=(5, 15), Linewidth=0.25);
+plt.plot(wave2[:,1],lowmin_cor, '-k', label='lower min', Linewidth=0.15);
+
+max_thkx = [-span[0]*0.5,-span[0]*0.5]
+max_thky = [upmax,lowmin]
+min_thkx = [-span[0]*0.75,-span[0]*0.75]
+min_thky = [upmin,lowmax]
+arw_sze = 0.002
+
+plt.plot(max_thkx,max_thky,'-k', Linewidth=0.75);
+plt.arrow(-span[0]*0.5,upmax-2*arw_sze,0.0,arw_sze, shape='full', color='k', lw=0, head_length=arw_sze, head_width=arw_sze*5)
+plt.arrow(-span[0]*0.5,lowmin+2*arw_sze,0.0,-arw_sze, shape='full', color='k', lw=0, head_length=arw_sze, head_width=arw_sze*5)
+plt.text(-span[0]*0.5,0.0," max thickness", fontsize=7)
+plt.plot(min_thkx,min_thky,'-k', Linewidth=0.75);
+plt.arrow(-span[0]*0.75,upmin-2*arw_sze,0.0,arw_sze, shape='full', color='k', lw=0, head_length=arw_sze, head_width=arw_sze*5)
+plt.arrow(-span[0]*0.75,lowmax+2*arw_sze,0.0,-arw_sze, shape='full', color='k', lw=0, head_length=arw_sze, head_width=arw_sze*5)
+plt.text(-span[0]*0.75,0.0," min thickness", fontsize=7)
+
+plt.xlabel('spanwise direction', fontsize=10)
+plt.ylabel('trailing edge thickness', fontsize=10)
+plt.yticks(np.arange(lowmin, upmax+0.01, 0.01))
+plt.legend(fontsize=5)
+plt.text(-span[0], upmax+0.002, 'WAVE DEPTH = %f'%(wvdepth), fontsize=7)
+plt.text(-span[0]*0.65, upmax+0.002, 'WAVE AMPL. = %f'%(wvampl), fontsize=7) 
+plt.text(-span[0]*0.28, upmax+0.002, 'AVG THICKNESS = %f'%(avg_thk), fontsize=7) 
+
+plt.text(-span[0], lowmin-0.0035, 'TYPE WAVE = %s'%(wchar), fontsize=7)
+plt.text(-span[0]*0.65, lowmin-0.0035, 'NODES/WAVE = %d'%(WV_NOD[0]), fontsize=7) 
+plt.text(-span[0]*0.28, lowmin-0.0035, 'NO. WAVES = %d'%(NUM_WAVE[0]), fontsize=7) 
+
+plt.savefig(f'{dirname}/TE_wavy_lines.pdf', bbox_inches='tight')
