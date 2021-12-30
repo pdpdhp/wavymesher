@@ -42,15 +42,15 @@ AMPLITUDE = [0.0125]
 #
 #
 #Number of waves in lateral direction
-NUM_WAVE = [4]
+NUM_WAVE = [8]
 #
 #
 #Number of points per wave in lateral direction
-WV_NOD = [5.0]
+WV_NOD = [35.0]
 #
 #
 #Span Dimension
-span = [1.0]
+span = [0.5]
 #
 #
 #ZigZag top wave rotational angle
@@ -62,7 +62,7 @@ ZZ_Abot = [0]
 #
 #
 # ending point heights
-ENDSU = [1.0,0.05,0.0]
+ENDSU = [1.0,0.062,0.0]
 #
 #
 # ending point heights
@@ -100,8 +100,9 @@ if WAVE_TYPE[0] == W1:
 	zbot_pos = AMPLITUDE * np.sin(np.radians(nperiod[0]*np.array(y_pos))) - ENDSL[1]
 elif WAVE_TYPE[0] == W2:
 	wchar = 'W2'
-	AMPLITUDE = 0.25*max_thick*(1 -(WAVE_DEPTH[0]/100))
-	ztop_pos = AMPLITUDE * np.cos(np.radians(nperiod[0]*np.array(y_pos))) + ENDSU[1] - AMPLITUDE
+	AMPLITUDE = 0.25*0.1*(1 -(WAVE_DEPTH[0]/100))
+	AMPLITUDEU = AMPLITUDE * 1.0
+	ztop_pos = AMPLITUDEU * np.cos(np.radians(nperiod[0]*np.array(y_pos))) + ENDSU[1] - AMPLITUDEU
 	zbot_pos = -AMPLITUDE * np.cos(np.radians(nperiod[0]*np.array(y_pos))) - ENDSL[1] + AMPLITUDE
 elif WAVE_TYPE[0] == W3:
 	wchar = 'W3'
@@ -165,7 +166,7 @@ for i in range(len(wave1[:,2])):
 	avg_thk += abs(wave1[i,2] - wave2[i,2])
 
 avg_thk = avg_thk/(i+1)
-
+print(avg_thk)
 #------------writing files---------------------
 # grid propertise metric
 f = open(f'{dirname}/wave_top.txt', 'w')

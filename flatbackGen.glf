@@ -48,7 +48,7 @@ proc Flbk_SrfDUTHDis { xarcs Ucrv Lcrv {Wave NO} {wdepth 50}} {
 		
 		if {$xutk>$xuref} {
 			
-			set dutk [expr ($ref_u - abs([lindex [lindex $u_tk end] 1]))]
+			set dutk [expr abs(($ref_u - abs([lindex [lindex $u_tk end] 1])))]
 			set sign 1
 			set tg_s 1
 			
@@ -93,7 +93,7 @@ proc Flbk_SrfDUTHDis { xarcs Ucrv Lcrv {Wave NO} {wdepth 50}} {
 		
 		if {$xltk>$xlref} {
 			
-			set dltk [expr (abs($ref_l) - abs([lindex [lindex $l_tk end] 1]))]
+			set dltk [expr abs(abs($ref_l) - abs([lindex [lindex $l_tk end] 1]))]
 			set sign 1
 			set tg_s 1
 			
@@ -342,7 +342,7 @@ proc surface_curve { surfaces } {
 	foreach srf $surfaces {
 
 		set Spsegment [pw::SegmentSpline create]
-		$Spsegment setSlope Free
+		$Spsegment setSlope Akima
 	
 		foreach node $srf {
 			$Spsegment addPoint [list [lindex $node 0] [lindex $node 1] [lindex $node 2]]

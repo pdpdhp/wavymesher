@@ -184,7 +184,7 @@ proc blend_wave { mtd dpth prct wave_bcon wave_tcon airfoilfront leftcons domtrs
 
 	} elseif { ! [string compare $mtd default] || ! [string compare $mtd DU97function] } {
 		
-		foreach y [lrange $ys_Pos 1 end-1] { 
+		foreach y [lrange $ys_Pos 3 end-3] { 
 			
 			set ld [expr 100*(1-(abs([lindex [[lindex $wave_Crvs 1] getXYZ -Y $y] 2]-\
 						[lindex [[lindex $wave_Crvs 0] getXYZ -Y $y] 2])/$TE_thk))]
