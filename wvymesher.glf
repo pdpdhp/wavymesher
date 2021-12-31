@@ -87,7 +87,7 @@ proc WAVYMESHER {} {
 	global MeshParameters nprofile NprofullFilename MparafullFilename
 	global res_lev ypg dsg grg chord_sg
 	global scriptDir fexmod waveDir blkexam blkexamv
-	global wave_sg span 
+	global wave_sg span wv_dpth_up
 	global symsepdd defset
 	
 	upvar 1 WAVE_PERCENT wv_prct
@@ -155,19 +155,18 @@ proc WAVYMESHER {} {
 
 	#----------------------------------------------------------------------------
 	#READING WAVE AT TRAILING EDGE
-	set wavelist [list {*}[lrange $meshparacol 6 10] $wave_sg $span \
+	set wavelist [list {*}[lrange $meshparacol 6 11] $wave_sg $span \
 						$ZZ_Atop $ZZ_Abot $endsu $endsl]
-	set wavelab [list {*}[lrange $defParas 6 10] WV_NOD span ZZ_Atop ZZ_Abot ENDSU ENDSL]
-	set wscales [lrange $meshparacol 11 12]
-	set woutdegs [lrange $meshparacol 13 14]
+	set wavelab [list {*}[lrange $defParas 6 11] WV_NOD span ZZ_Atop ZZ_Abot ENDSU ENDSL]
+	set wscales [lrange $meshparacol 12 13]
+	set woutdegs [lrange $meshparacol 14 15]
 
 	Wave_Update $wavelab $wavelist $waveDir
 
 	WaveRead
 	
-	puts "WAVE TYPE: $wv_typ | METHOD: $wv_mtd | DEPTH(%): $wv_dpth | WAVY PERCENT(%): $wv_prct "
 	puts $symsep
-	
+
 	set blkexam [pw::Examine create BlockVolume]
 
 	#----------------------------------------------------------------------------
@@ -179,7 +178,7 @@ proc WAVYMESHER {} {
 
 	#----------------------------------------------------------------------------
 
-	WaveRemesh $wv_mtd $wv_dpth $wv_prct $wscales $woutdegs
+	WaveRemesh $wv_mtd $wv_dpth_up $wv_prct $wscales $woutdegs
 
 	#DOMAIN EXAMINE
 	$blkexam examine

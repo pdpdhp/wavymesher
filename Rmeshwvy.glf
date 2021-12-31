@@ -7,7 +7,7 @@
 # last update: Oct 2021
 #==============================================================
 
-proc WaveRemesh {method wdpth wprc wscales woutdegs} {
+proc WaveRemesh {method wv_dpth_up wprc wscales woutdegs} {
 
 	global w1_x w1_y w1_z w2_x w2_y w2_z blkexm span
 	global N_third rightcon_top rightcon_bot airfoilfront left_hte \
@@ -19,11 +19,6 @@ proc WaveRemesh {method wdpth wprc wscales woutdegs} {
 	upvar 1 fexmod outfile
 	
 	set waveVolexam [pw::Examine create BlockVolume]
-	
-	set min_w1_z [tcl::mathfunc::min {*}$w2_z]
-	set max_w1_z [tcl::mathfunc::max {*}$w2_z]
-	
-	set wv_dpth_up [expr ($min_w1_z/$max_w1_z)*100]
 	
 	foreach x $w1_x y $w1_y z $w1_z {
 		lappend w1_pts [list $x $y $z]

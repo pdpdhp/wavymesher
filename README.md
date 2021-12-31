@@ -52,13 +52,13 @@ Three options are available to generate waves at trailing edge. The default meth
 #====================================================
 #inidcate how do you want to generate waviness at TE on your flatback airfoil
 
-set WAVE_GEN_METHOD           default;# (default/DU97function/spline) method to distribute thickness on waves
+set WAVE_GEN_METHOD      DU97function;# (default/DU97function/spline) method to distribute thickness on waves
 
 #types of wavyness
 set WAVE_TYPE                      W2;# W1: sine function | W2: cosine function (uses wave depth)| W3: cos.sin
 
 #Percent of min/max thickness
-set WAVE_DEPTH                     50;# ratio of min to max thickness at wavy TE
+set WAVE_DEPTH                     50;# ratio of min to max thickness at wavy TE (%)
 
 #Percent of waviness at TE
 set WAVE_PERCENT                   10;# (%) percent of chord length on which waviness grows at TE 
@@ -66,8 +66,11 @@ set WAVE_PERCENT                   10;# (%) percent of chord length on which wav
 #Wavy Parameters
 set AMPLITUDE                  0.0125;# ampl. of wave for only for W1 and W3 types
 
+#Upper-to-lower amplitude ratio
+set AMPLITUDE_RATIO                40;# ratio of upper amplitude to lower amplitude (%)
+
 #Number of Waves 
-set NUM_WAVE                        4;# W2 needs even number | W3 needs two numbers (i.e. 4,1) --> cos and sin
+set NUM_WAVE                        8;# W2 needs even number | W3 needs two numbers (i.e. 4,1) --> cos and sin
 ```
 
 Wavy Spline Method:

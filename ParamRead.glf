@@ -18,7 +18,7 @@ proc ParamDefualt {fdef} {
 	$fdefinterp eval $defscript
 
 	global res_lev GRD_TYP FLATBACK_GEN FLATBACK_GEN_METHOD FLATBACK_PERCENT WAVE_GEN_METHOD \
-		WAVE_TYPE WAVE_DEPTH WAVE_PERCENT AMPLITUDE NUM_WAVE WAVE_Begin_Segment_Scale \
+		WAVE_TYPE WAVE_DEPTH WAVE_PERCENT AMPLITUDE AMPLITUDE_RATIO NUM_WAVE WAVE_Begin_Segment_Scale \
 		WAVE_End_Segment_Scale WAVE_Top_Segment_Angle WAVE_Bottom_Segment_Angle \
 		WAVE_Rotational_Angle_Top WAVE_Rotational_Angle_Bottom TOTAL_HEIGHT UNS_ALG UNS_CTYP \
 		SIZE_DCY span fixed_snodes span_dimension FLATBACK_export WAVY_FLATBACK_export cae_solver \
@@ -26,7 +26,7 @@ proc ParamDefualt {fdef} {
 		EXP_FAC IMP_FAC VOL_FAC 
 	
 	set defParas [list res_lev GRD_TYP FLATBACK_GEN FLATBACK_GEN_METHOD FLATBACK_PERCENT WAVE_GEN_METHOD \
-			WAVE_TYPE WAVE_DEPTH WAVE_PERCENT AMPLITUDE NUM_WAVE WAVE_Begin_Segment_Scale \
+			WAVE_TYPE WAVE_DEPTH WAVE_PERCENT AMPLITUDE AMPLITUDE_RATIO NUM_WAVE WAVE_Begin_Segment_Scale \
 			WAVE_End_Segment_Scale WAVE_Top_Segment_Angle WAVE_Bottom_Segment_Angle \
 			WAVE_Rotational_Angle_Top WAVE_Rotational_Angle_Bottom TOTAL_HEIGHT UNS_ALG UNS_CTYP \
 			SIZE_DCY span fixed_snodes span_dimension FLATBACK_export WAVY_FLATBACK_export \

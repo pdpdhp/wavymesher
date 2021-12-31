@@ -79,7 +79,8 @@ proc InterSect { bot top } {
 proc WaveRead { } {
 	
 	global waveDir w1_x w1_y w1_z w2_x w2_y w2_z
-	
+	global WAVE_TYPE WAVE_GEN_METHOD WAVE_PERCENT AMPLITUDE_RATIO wv_dpth_up
+
 	set fp1 [open "$waveDir/wave_bot.txt" r]
 
 	set i 0
@@ -117,4 +118,15 @@ proc WaveRead { } {
 	}
 	
 	InterSect $w1_z $w2_z
+
+	set min_w1_z [tcl::mathfunc::min {*}$w1_z]
+	set min_w2_z [tcl::mathfunc::min {*}$w2_z]
+
+	set max_w1_z [tcl::mathfunc::max {*}$w1_z]
+	set max_w2_z [tcl::mathfunc::max {*}$w2_z]
+	
+	set wv_dpth_up [expr (abs($min_w2_z-$max_w1_z)/abs($max_w2_z-$min_w1_z))*100]
+
+	puts "WAVE TYPE: $WAVE_TYPE | METHOD: $WAVE_GEN_METHOD | DEPTH: [format %.2f $wv_dpth_up]% \
+		| WAVY PERCENT: $WAVE_PERCENT% | AMPL. RATIO: $AMPLITUDE_RATIO%"
 }

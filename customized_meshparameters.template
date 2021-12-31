@@ -11,12 +11,12 @@
 #====================================================
 #Grid Levels vary from the first line (finest, level 0) 
 #corresponding to last to first elements of grid guideline below.
-set res_lev                         4;# From  0 (finest) to (coarsest) | last elements are for coarsest
+set res_lev                         1;# From  0 (finest) to (coarsest) | last elements are for coarsest
 
 #GRID SYSTEM'S ARRANGEMENT: STRUCTURED OR UNSTRUCTRED
 #====================================================
 #PLEASE SELECT GRID SYSTEM:
-set GRD_TYP                       HYB;# STR (for STRUCTURED) HYB (for HYBRID)
+set GRD_TYP                       STR;# STR (for STRUCTURED) HYB (for HYBRID)
 
 #FLATBACK PROFILE GENERATION BASED ON INPUT AIRFOIL
 #====================================================
@@ -32,13 +32,13 @@ set FLATBACK_PERCENT               10;# (%) percent of chord length
 #====================================================
 #inidcate how do you want to generate waviness at TE on your flatback airfoil
 
-set WAVE_GEN_METHOD           default;# (default/DU97function/spline) method to distribute thickness on waves
+set WAVE_GEN_METHOD      DU97function;# (default/DU97function/spline) method to distribute thickness on waves
 
 #types of wavyness
 set WAVE_TYPE                      W2;# W1: sine function | W2: cosine function (uses wave depth)| W3: cos.sin
 
 #Percent of min/max thickness
-set WAVE_DEPTH                     50;# ratio of min to max thickness at wavy TE
+set WAVE_DEPTH                     50;# ratio of min to max thickness at wavy TE (%)
 
 #Percent of waviness at TE
 set WAVE_PERCENT                   10;# (%) percent of chord length on which waviness grows at TE 
@@ -46,8 +46,11 @@ set WAVE_PERCENT                   10;# (%) percent of chord length on which wav
 #Wavy Parameters
 set AMPLITUDE                  0.0125;# ampl. of wave for only for W1 and W3 types
 
+#Upper-to-lower amplitude ratio
+set AMPLITUDE_RATIO               100;# ratio of upper amplitude to lower amplitude (%)
+
 #Number of Waves 
-set NUM_WAVE                        4;# W2 needs even number | W3 needs two numbers (i.e. 4,1) --> cos and sin
+set NUM_WAVE                        8;# W2 needs even number | W3 needs two numbers (i.e. 4,1) --> cos and sin
 
 #WAVY PARAMETERS ONLY FOR SPLINE METHOD 
 #----------------------------------------------------
@@ -71,7 +74,7 @@ set WAVE_Rotational_Angle_Bottom    0;# (deg) lets wave rotates clockwise at low
 
 #====================================================
 # approximate total diameter of o-type grid 
-set TOTAL_HEIGHT                 1000;# 
+set TOTAL_HEIGHT                  600;# 
 
 # UNSTRUCTURED SETTINGS FOR GRD_TYP: HYB
 #====================================================
@@ -122,10 +125,10 @@ set save_native                   YES;# (YES/NO)
 #EACH CORRESPONDING ELEMENT REPRESENT A GRID LEVEL INDICATED AT TOP
 
 #REYNOLDS NUMBER
-set REYNOLDS_NUM                                   {3.2E6,3.2E6,3.2E6,3.2E6,3.2E6}
+set REYNOLDS_NUM                                   {1.0E6,1.0E6,1.0E6,1.0E6,1.0E6}
 
 #MACH NUMBER
-set MACH                                                     {0.2,0.2,0.2,0.2,0.2}
+set MACH                                                {0.15,0.15,0.15,0.15,0.15}
 
 #TARGET Y PLUS FOR RANS AND HYBRID RANS/LES
 set TARG_YPR                                    {0.04488,0.08977,1.0,3.591,10.181}
@@ -134,19 +137,19 @@ set TARG_YPR                                    {0.04488,0.08977,1.0,3.591,10.18
 set TARG_GR                                             {1.12,1.14,1.16,1.18,1.25}
 
 # CHORDWISE SPACING 
-set CHR_SPC                                   {0.002,0.00425,0.00775,0.0155,0.051}
+set CHR_SPC                              {0.0019375,0.003875,0.00775,0.0155,0.051}
 
 # WAVE SPACING GUIDELINE
-set WV_NOD                                                          {64,35,16,8,5}
+set WV_NOD                                                         {56,36,20,12,5}
 
 # TRAILING EDGE SPACING RATIO 
-set TE_SRT                              {0.00048,0.0015,0.001925,0.0047625,0.0076}
+set TE_SRT                           {0.00048,0.0012025,0.001925,0.0047625,0.0076}
 
 # TRAILING EDGE NUMBER OF POINTS 
-set TE_PT                                                        {120,70,40,20,10}
+set TE_PT                                                        {160,80,40,20,10}
 
 # EXPLICIT EXTRUSION FACTORS 
-set EXP_FAC                                                  {0.9,0.9,0.9,0.9,0.9}
+set EXP_FAC                                             {0.45,0.45,0.45,0.45,0.45}
 
 # IMPLICIT EXTRUSION FACTORS 
 set IMP_FAC                                             {20.0,20.0,20.0,20.0,20.0}
@@ -154,4 +157,4 @@ set IMP_FAC                                             {20.0,20.0,20.0,20.0,20.
 # NORMAL EXTRUSION VOLUME RATIO 
 set VOL_FAC                                              {0.45,0.45,0.45,0.45,0.5}
 
-#-----------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------

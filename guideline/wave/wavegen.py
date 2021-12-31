@@ -41,12 +41,16 @@ WAVE_PERCENT = [10]
 AMPLITUDE = [0.0125]
 #
 #
+#Wave's Amp.
+AMPLITUDE_RATIO = [40]
+#
+#
 #Number of waves in lateral direction
 NUM_WAVE = [8]
 #
 #
 #Number of points per wave in lateral direction
-WV_NOD = [35.0]
+WV_NOD = [36.0]
 #
 #
 #Span Dimension
@@ -96,17 +100,19 @@ half_thick = max_thick/2
 # different wave equations
 if WAVE_TYPE[0] == W1:
 	wchar = 'W1'
-	ztop_pos = AMPLITUDE * np.sin(np.radians(nperiod[0]*np.array(y_pos))) + ENDSU[1]
+	AMPLITUDEU = AMPLITUDE[0] * (AMPLITUDE_RATIO[0]/100)
+	ztop_pos = AMPLITUDEU * np.sin(np.radians(nperiod[0]*np.array(y_pos))) + ENDSU[1]
 	zbot_pos = AMPLITUDE * np.sin(np.radians(nperiod[0]*np.array(y_pos))) - ENDSL[1]
 elif WAVE_TYPE[0] == W2:
 	wchar = 'W2'
-	AMPLITUDE = 0.25*0.1*(1 -(WAVE_DEPTH[0]/100))
-	AMPLITUDEU = AMPLITUDE * 1.0
+	AMPLITUDE = 0.25*max_thick*(1 -(WAVE_DEPTH[0]/100))
+	AMPLITUDEU = AMPLITUDE * (AMPLITUDE_RATIO[0]/100)
 	ztop_pos = AMPLITUDEU * np.cos(np.radians(nperiod[0]*np.array(y_pos))) + ENDSU[1] - AMPLITUDEU
 	zbot_pos = -AMPLITUDE * np.cos(np.radians(nperiod[0]*np.array(y_pos))) - ENDSL[1] + AMPLITUDE
 elif WAVE_TYPE[0] == W3:
 	wchar = 'W3'
-	ztop_pos = ENDSU[1] - AMPLITUDE * np.cos(np.radians(nperiod[0]*np.array(y_pos))) * np.sin(np.radians(nperiod[1]*np.array(y_pos)))
+	AMPLITUDEU = AMPLITUDE[0] * (AMPLITUDE_RATIO[0]/100)
+	ztop_pos = ENDSU[1] - AMPLITUDEU * np.cos(np.radians(nperiod[0]*np.array(y_pos))) * np.sin(np.radians(nperiod[1]*np.array(y_pos)))
 	zbot_pos =  - ENDSL[1] + AMPLITUDE * np.cos(np.radians(nperiod[0]*np.array(y_pos))) * np.sin(np.radians(nperiod[1]*np.array(y_pos)))
 
 topnodes = np.stack((np.array(xtop_pos-1), np.array(ztop_pos-ENDSU[1])))
@@ -158,7 +164,8 @@ upmin_cor =  np.zeros(Npt)+upmin
 lowmin_cor =  np.zeros(Npt)+lowmin
 
 wvdepth = (abs(upmin-lowmax)/abs(upmax-lowmin))*100
-wvampl = (upmax-upmin)*0.5
+wvampl = abs(lowmax-lowmin)*0.5
+ampl_ratio = AMPLITUDE_RATIO[0]
 
 #averaging local thickness across the wave
 avg_thk = 0.0
@@ -166,7 +173,6 @@ for i in range(len(wave1[:,2])):
 	avg_thk += abs(wave1[i,2] - wave2[i,2])
 
 avg_thk = avg_thk/(i+1)
-print(avg_thk)
 #------------writing files---------------------
 # grid propertise metric
 f = open(f'{dirname}/wave_top.txt', 'w')
@@ -207,9 +213,10 @@ plt.xlabel('spanwise direction', fontsize=10)
 plt.ylabel('trailing edge thickness', fontsize=10)
 plt.yticks(np.arange(lowmin, upmax+0.01, 0.01))
 plt.legend(fontsize=5)
-plt.text(-span[0], upmax+0.002, 'WAVE DEPTH = %f'%(wvdepth), fontsize=7)
+plt.text(-span[0], upmax+0.002, 'WAVE DEPTH = %2.4f%%'%(wvdepth), fontsize=7)
 plt.text(-span[0]*0.65, upmax+0.002, 'WAVE AMPL. = %f'%(wvampl), fontsize=7) 
 plt.text(-span[0]*0.28, upmax+0.002, 'AVG THICKNESS = %f'%(avg_thk), fontsize=7) 
+plt.text(-span[0]*0.28, upmin-0.005, 'AMPL RATIO = %2.2f%%'%(ampl_ratio), fontsize=7)
 
 plt.text(-span[0], lowmin-0.0035, 'TYPE WAVE = %s'%(wchar), fontsize=7)
 plt.text(-span[0]*0.65, lowmin-0.0035, 'NODES/WAVE = %d'%(WV_NOD[0]), fontsize=7) 

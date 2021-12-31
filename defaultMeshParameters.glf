@@ -38,13 +38,16 @@ set WAVE_GEN_METHOD           default;# (default/DU97function/spline) method to 
 set WAVE_TYPE                      W2;# W1: sine function | W2: cosine function (uses wave depth)| W3: cos.sin
 
 #Percent of min/max thickness
-set WAVE_DEPTH                     50;# ratio of min to max thickness at wavy TE
+set WAVE_DEPTH                     50;# ratio of min to max thickness at wavy TE (%)
 
 #Percent of waviness at TE
 set WAVE_PERCENT                   10;# (%) percent of chord length on which waviness grows at TE 
 
 #Wavy Parameters
 set AMPLITUDE                  0.0125;# ampl. of wave for only for W1 and W3 types
+
+#Upper-to-lower amplitude ratio
+set AMPLITUDE_RATIO                60;# ratio of upper amplitude to lower amplitude (%)
 
 #Number of Waves 
 set NUM_WAVE                        4;# W2 needs even number | W3 needs two numbers (i.e. 4,1) --> cos and sin
