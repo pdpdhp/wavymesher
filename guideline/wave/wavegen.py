@@ -6,15 +6,16 @@
 # written by Pay Dehpanah
 # last update: Sep 2021
 #==============================================================
-
 import numpy as np
 import math
+import matplotlib
+matplotlib.use('Agg')
+
 from pathlib import Path
 from math import hypot
 from matplotlib import pyplot as plt
 import os
 dirname = os.path.dirname(os.path.realpath(__file__))
-
 Path(f"{dirname}").mkdir(parents=True, exist_ok=True)
 
 #wave tags to identify them
@@ -23,7 +24,6 @@ W2 = 2
 W3 = 3
 YES = 1
 NO = 0
-#
 #------------------------wave specifications are set by wavymesher scripts--------------------
 #Wave Type
 WAVE_TYPE = [W2]

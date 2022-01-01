@@ -11,7 +11,7 @@
 #====================================================
 #Grid Levels vary from the first line (finest, level 0) 
 #corresponding to last to first elements of grid guideline below.
-set res_lev                         1;# From  0 (finest) to (coarsest) | last elements are for coarsest
+set res_lev                         4;# From  0 (finest) to (coarsest) | last elements are for coarsest
 
 #GRID SYSTEM'S ARRANGEMENT: STRUCTURED OR UNSTRUCTRED
 #====================================================
