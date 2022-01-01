@@ -262,7 +262,7 @@ proc Flbk_NdDis {Flbk_Tag Ucrv Lcrv FLT_PRC {reDis 50}} {
 	
 	set end_u [lindex [$Ucrv getXYZ -arc 1] 1]
 	set end_l [lindex [$Lcrv getXYZ -arc 1] 1]
-	
+
 	if { [string compare $Flbk_Tag YES]==0 } {
 
 		set max_utk [tcl::mathfunc::max {*}$utk]
@@ -298,7 +298,6 @@ proc Flbk_NdDis {Flbk_Tag Ucrv Lcrv FLT_PRC {reDis 50}} {
 	set ends [list $end_u $end_l]
 	return [list $refs $ends $xarcs]
 }
-
 
 #upper surface/lower surface
 proc uplow_surfaces { xnodes ynodes } {
@@ -368,7 +367,9 @@ proc surface_scale { surfaces } {
 proc flt_specs { flt_Dsc flt_prc Ucrv Lcrv {wdpth 50}} {
 	
 	global ref_u ref_l endtk_u endtk_l chordln end_u end_l end_tu end_tl
-	
+
+	upvar #0 AMPLITUDE_RATIO ratio_ab 
+
 	set endtk_u [expr abs($ref_u - $end_u)]
 	set endtk_l [expr abs($ref_l - $end_l)]
 	
@@ -378,16 +379,21 @@ proc flt_specs { flt_Dsc flt_prc Ucrv Lcrv {wdpth 50}} {
 	set lscale [expr abs($flt_prc*$chordln*0.01*0.5-abs($end_l))/$endtk_l]
 
 	#getting min and max thickness at TE
-	set max_te [expr abs($end_u - $end_l)*0.5]
-	set min_te [expr $wdpth*0.01*$max_te]
-	
+	set maxu_te [expr abs($end_u)]
+    set maxl_te [expr abs($end_l)]
+
+    set low_amp [expr (abs($end_u - $end_l)*($wdpth/100))/(2*(1+($ratio_ab/100.0)))]
+    set up_amp [expr ($ratio_ab/100.0)*$low_amp]
+    set minu_te [expr 2*$up_amp]
+	set minl_te [expr 2*$low_amp]
+
 	#target TE end location
-	set end_tu [expr [lindex [lindex $flt_Dsc 1] 0] - $min_te]
-	set end_tl [expr [lindex [lindex $flt_Dsc 1] 1] + $min_te]
-	
+	set end_tu [expr $end_u - $minu_te]
+	set end_tl [expr $end_l + $minl_te]
+
 	#scale factors for thickness distributions of DU97 thickness distribution function
-	set minw_usc [expr ($max_te-$min_te)/($ref_u - $max_te)]
-	set minw_lsc [expr ($max_te-$min_te)/($max_te - abs($ref_l))]
+	set minw_usc [expr ($maxu_te-$minu_te)/($ref_u - $maxu_te)]
+	set minw_lsc [expr ($maxl_te-$minl_te)/($maxl_te - abs($ref_l))]
 	
 	return [list $uscale $lscale $minw_usc $minw_lsc [lindex $flt_Dsc end]]
 }
